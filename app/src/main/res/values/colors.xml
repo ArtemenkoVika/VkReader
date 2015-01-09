@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="app_blue">#add4e3</color>
+    <color name="app_list">#c4d0d4</color>
+    <color name="app_text">#ece1e1</color>
+    <color name="app_theme">#61757c</color>
+    <color name="studio_blue">#a1dcf2</color>
+    <color name="dark_blue">#008</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+</resources>

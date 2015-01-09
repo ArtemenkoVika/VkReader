@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.admin.vkreader.activity.DetailsActivity">
+    <item
+        android:id="@+id/IDM_BACK"
+        android:icon="@drawable/arrow"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM1"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM2"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM_SAVE"
+        android:showAsAction="always"
+        android:title="@string/save" />
+    <item
+        android:id="@+id/IDM3"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM4"
+        android:showAsAction="always"
+        android:title="" />
+</menu>

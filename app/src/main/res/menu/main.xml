@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity" >
+    <item
+        android:id="@+id/IDM_BACK"
+        android:icon="@drawable/arrow"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM_BACK_TO_MAIN"
+        android:showAsAction="always"
+        android:title="@string/back_to_main" />
+    <item
+        android:id="@+id/IDM_FAVORITE"
+        android:showAsAction="always"
+        android:title="@string/favorite" />
+    <item
+        android:id="@+id/IDM_SAVE"
+        android:showAsAction="always"
+        android:title="@string/save" />
+    <item
+        android:id="@+id/IDM_DELETE"
+        android:showAsAction="always"
+        android:title="@string/delete" />
+</menu>

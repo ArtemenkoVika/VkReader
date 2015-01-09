@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.admin.vkreader">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/portfolio"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <intent-filter>
+            <action android:name="android.intent.action.SEND" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.DetailsActivity"
+            android:label="@string/title_activity_details" />
+
+        <service
+            android:name=".service.UpdateService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".activity.ResultNotificationActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/title_activity_result_notification"
+            android:launchMode="singleTask"
+            android:parentActivityName="activity.MainActivity"
+            android:taskAffinity="com.example.admin.vkreader"
+            android:theme="@android:style/Animation.Dialog">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.NotificationActivityStart"
+            android:excludeFromRecents="true"
+            android:label="@string/title_activity_pending_activity_start"
+            android:launchMode="singleTask"
+            android:parentActivityName="activity.MainActivity"
+            android:taskAffinity="com.example.admin.vkreader"
+            android:theme="@android:style/Animation.Dialog">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.BaseActivity"
+            android:label="@string/title_activity_base" />
+        <activity
+            android:name=".activity.FacebookShareActivity"
+            android:label="@string/title_activity_facebook_share"></activity>
+
+        <activity
+            android:name=".activity.GoogleShareActivity"
+            android:label="@string/title_activity_google_share"></activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:resource="@string/facebook_app_id" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+    </application>
+
+</manifest>

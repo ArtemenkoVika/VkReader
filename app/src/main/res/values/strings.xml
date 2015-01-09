@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GH_ArtemenkoVika_SQLite</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_details"></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="url">https://api.vk.com/method/wall.getById?posts=-41915192_105,-41915192_116,-41915192_115,-41915192_109,-41915192_107,-41915192_104,-41915192_101,-41915192_99,-41915192_98,-41915192_94,-41915192_85,-41915192_84,-41915192_66,-41915192_54,-41915192_50,-41915192_46,-41915192_45,-41915192_36,-41915192_26,-41915192_15,-41915192_7&amp;extended=1></string>
+    <string name="url2">https://api.vk.com/method/wall.getById?posts=-41915192_117,-41915192_89,-41915192_83,-41915192_70,-41915192_68,-41915192_61,-41915192_60&amp;extended=1</string>
+    <string name="title_activity_result_notification"></string>
+    <string name="ticker">START_SERVICE_UPDATE</string>
+    <string name="contentTitle">GH_ArtemenkoVika_SQLite_StartService</string>
+    <string name="contentText">Service start!</string>
+    <string name="ticker2">UPDATE</string>
+    <string name="contentTitle2">GH_ArtemenkoVika_SQLite_UPDATE</string>
+    <string name="contentText2">UPDATE</string>
+    <string name="title_activity_pending_activity_start"></string>
+    <string name="title_activity_base"></string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="favorite">*FAVORITE*</string>
+    <string name="title_activity_favorite_list">FavoriteListActivity</string>
+    <string name="title_activity_favorite_details">FavoriteDetailsActivity</string>
+    <string name="back_to_main">Back to main</string>
+    <string name="net">No Internet Access</string>
+    <string name="dialog_nothing">None have been added!</string>
+    <string name="service_started">Service started!</string>
+    <string name="app_updated">The app has been updated!</string>
+    <string name="no_connection_database">No connection with the database!</string>
+    <string name="facebook_app_id">1517282741894130</string>
+    <string name="title_activity_facebook_share">FacebookShare</string>
+    <string name="share">Share</string>
+    <string name="title_activity_google_share">GoogleShareActivity</string>
+
+</resources>

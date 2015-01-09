@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/item_background_selector"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/option_text"
+        style="@style/CustomText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@drawable/item_text_selector" />
+
+</LinearLayout>
