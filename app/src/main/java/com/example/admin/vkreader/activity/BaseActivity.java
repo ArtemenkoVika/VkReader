@@ -1,10 +1,8 @@
 package com.example.admin.vkreader.activity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
@@ -12,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
 import com.example.admin.vkreader.entity.DataBaseOfFavoriteEntity;
@@ -31,11 +28,10 @@ public class BaseActivity extends FragmentActivity implements DialogInterface.On
     protected DataBase dataBase = new DataBase();
     protected ResultClass resultClass = ResultClass.getInstance();
     protected int positionDelete;
-    protected CustomAdapter customAdapter;
     protected DataDeleteAdapter deleteAdapter;
     protected TextView textView;
     protected ImageView imageView;
-    protected Fragment fragment2;
+    protected Fragment detailsFragment;
     protected MenuItem menuSave;
     protected boolean back = false;
     protected AlertDialog dialogDelete;
@@ -119,7 +115,7 @@ public class BaseActivity extends FragmentActivity implements DialogInterface.On
     }
 
     public void inVisible() {
-        if (fragment2 != null) {
+        if (detailsFragment != null) {
             textView.setText("");
             imageView.setVisibility(View.INVISIBLE);
         }
@@ -130,13 +126,5 @@ public class BaseActivity extends FragmentActivity implements DialogInterface.On
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() == null) {
-            return false;
-        } else return connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

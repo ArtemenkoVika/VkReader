@@ -12,6 +12,7 @@ import com.facebook.AppEventsLogger;
 public class DetailsActivity extends BaseActivity {
     private Fragment fragment2;
     private MenuItem menuSave;
+    private boolean isOnline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,9 +20,11 @@ public class DetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_details);
         savedInstanceState = getIntent().getExtras();
         position = savedInstanceState.getInt(MainActivity.IDE_EXTRA);
+        isOnline = savedInstanceState.getBoolean(MainActivity.IDE_EXTRA_BOOL);
         fragment2 = new DetailsFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.frm2, fragment2).commit();
         savedInstanceState.putInt(DetailsFragment.ARG_POSITION, position);
+        savedInstanceState.putBoolean(DetailsFragment.ARG_BOOL, isOnline);
         fragment2.setArguments(savedInstanceState);
     }
 

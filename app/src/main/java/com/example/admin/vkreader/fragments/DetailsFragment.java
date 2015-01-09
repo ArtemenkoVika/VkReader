@@ -1,8 +1,6 @@
 package com.example.admin.vkreader.fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -11,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.activity.FacebookShareActivity;
@@ -20,9 +17,11 @@ import com.example.admin.vkreader.patterns.Singleton;
 import com.google.android.gms.plus.PlusShare;
 
 public class DetailsFragment extends BaseFragment implements View.OnClickListener {
-    public static final String ARG_POSITION = "param";
+    public static final String ARG_POSITION = "param_det";
+    public static final String ARG_BOOL = "is_online";
     private Button buttonFacebook;
     private Button buttonGoogle;
+    private boolean isOnline;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +29,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         if (getArguments() != null) {
             savedInstanceState = getArguments();
             position = savedInstanceState.getInt(ARG_POSITION);
+            isOnline = savedInstanceState.getBoolean(ARG_BOOL);
         }
     }
 
@@ -42,7 +42,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         buttonFacebook.setOnClickListener(this);
         buttonGoogle = (Button) view.findViewById(R.id.btn_g_plus);
         buttonGoogle.setOnClickListener(this);
-        if (isOnline()) {
+        if (isOnline) {
             buttonFacebook.setVisibility(View.VISIBLE);
             buttonGoogle.setVisibility(View.VISIBLE);
         } else {
@@ -72,33 +72,23 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_facebook:
-                if (isOnline()) {
-                    try {
-                        //facebookPublish();
+                try {
+                    facebookPublish();
 
-                Intent intent = new Intent();
-                intent.setClass(getActivity(), FacebookShareActivity.class);
-                startActivityForResult(intent, 1);
-                    } catch (Exception e) {
-                    }
-                } else {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.net),
-                            Toast.LENGTH_LONG).show();
+//                    Intent intent = new Intent();
+//                    intent.setClass(getActivity(), FacebookShareActivity.class);
+//                    startActivityForResult(intent, 1);
+                } catch (Exception e) {
                 }
                 break;
             case R.id.btn_g_plus:
-                if (isOnline()) {
-                    try {
-                        googlePlusPublish();
+                try {
+                    googlePlusPublish();
 
 //                    Intent intent = new Intent();
 //                    intent.setClass(getActivity(), GoogleShareActivity.class);
 //                    startActivityForResult(intent, 1);
-                    } catch (Exception e) {
-                    }
-                } else {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.net),
-                            Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
                 }
                 break;
             default:
@@ -109,9 +99,18 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
     public void facebookPublish() {
         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, resultClass.getUrls().get(position));
-        shareIntent.putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml
-                ("<p>" + resultClass.getText().get(position) + "</p>"));
+        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
+        //shareIntent.putExtra(Intent.EXTRA_TEXT, resultClass.getUrls().get(position));
+        shareIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                Html.fromHtml(new StringBuilder()
+                        .append("<p><b>Some Content</b></p>")
+                        .append("<a>http://www.google.com</a>")
+                        .append("<small><p>More content</p></small>")
+                        .toString())
+        );
+//                putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml
+//                ("<p>" + resultClass.getText().get(position) + "</p>"));
         startActivity(shareIntent);
     }
 
@@ -122,13 +121,5 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
                         //.setContentUrl(Uri.parse("https://developers.google.com/+/"))
                 .getIntent();
         startActivityForResult(shareIntent, GoogleShareActivity.REQUEST_CODE_RESOLVE);
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() == null) {
-            return false;
-        } else return connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

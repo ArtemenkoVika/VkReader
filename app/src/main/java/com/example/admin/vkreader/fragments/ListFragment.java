@@ -46,7 +46,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_list, container, false);
-        singleton = Singleton.getInstance();;
+        singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
         frameLayout = (FrameLayout) getActivity().findViewById(R.id.frm);
@@ -57,8 +57,8 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
             textView.setOnClickListener(this);
         }
         listView = (ListView) view.findViewById(R.id.my_list);
-        if (isOnline) {
-            try {
+        try {
+            if (isOnline) {
                 if (resultClass.getTitle() == null) {
                     resultClass.setTitle(new ArrayList<String>());
                     resultClass.setText(new ArrayList<String>());
@@ -70,21 +70,21 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
                         singleton.setArrayAdapter(new CustomAdapter(getActivity(), R.layout.row,
                                 parseTask.get()));
                 }
-            } catch (InterruptedException e) {
-                System.out.println(e + " - in MyListFragment");
-            } catch (ExecutionException e) {
-                System.out.println(e + " - in MyListFragment");
-            } catch (NullPointerException e) {
-                System.out.println(e + " - in MyListFragment (onCreateView)");
+            } else {
+                if (singleton.getArrayAdapter() == null)
+                    singleton.setArrayAdapter(new CustomAdapter(getActivity(), R.layout.row, list));
             }
-        } else {
-            if (singleton.getArrayAdapter() == null)
-                singleton.setArrayAdapter(new CustomAdapter(getActivity(), R.layout.row, list));
+            listView.setAdapter(singleton.getArrayAdapter());
+            singleton.getArrayAdapter().setNotifyOnChange(true);
+            listView.setOnItemClickListener(this);
+            someEventListener.someListView(listView);
+        } catch (InterruptedException e) {
+            System.out.println(e + " - in MyListFragment");
+        } catch (ExecutionException e) {
+            System.out.println(e + " - in MyListFragment");
+        } catch (NullPointerException e) {
+            System.out.println(e + " - in MyListFragment (onCreateView)");
         }
-        listView.setAdapter(singleton.getArrayAdapter());
-        singleton.getArrayAdapter().setNotifyOnChange(true);
-        listView.setOnItemClickListener(this);
-        someEventListener.someListView(listView);
         return view;
     }
 

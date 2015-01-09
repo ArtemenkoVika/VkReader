@@ -1,13 +1,10 @@
 package com.example.admin.vkreader.activity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,27 +15,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
-import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.fragments.BaseFragment;
+import com.example.admin.vkreader.fragments.DetailsFragment;
 import com.example.admin.vkreader.fragments.ListFragment;
 import com.example.admin.vkreader.service.UpdateService;
 import com.facebook.AppEventsLogger;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity implements ListFragment.onSomeEventListener {
     public static final int ACTION_EDIT = 101;
     public static final String IDE_EXTRA = "param";
+    public static final String IDE_EXTRA_BOOL = "bool";
     public static final String IDE_BUNDLE_BOOL = "bool";
-    private ListFragment fragment1;
+    private ListFragment listFragment;
     private Intent intent;
     private FrameLayout frameLayout;
     private MenuItem menuBack;
     private boolean isOnline;
-    private ArrayList arNull = new ArrayList();
     private ArrayList arrayFavorite;
     private ArrayList arrayDelete;
     private ListView listView;
@@ -56,13 +51,17 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         }
         singleton.count++;
         if (isOnline) startService(intent);
-        customAdapter = new CustomAdapter(this, R.layout.row, arNull);
-        fragment1 = new ListFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.frm, fragment1).commit();
+        listFragment = new ListFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.frm, listFragment).commit();
         savedInstanceState = new Bundle();
         savedInstanceState.putBoolean(IDE_BUNDLE_BOOL, isOnline);
-        fragment1.setArguments(savedInstanceState);
-        fragment2 = getSupportFragmentManager().findFragmentById(R.id.details_frag);
+        listFragment.setArguments(savedInstanceState);
+        detailsFragment = getSupportFragmentManager().findFragmentById(R.id.details_frag);
+        if (detailsFragment != null) {
+            //savedInstanceState = new Bundle();
+            savedInstanceState.putBoolean(DetailsFragment.ARG_BOOL, isOnline);
+            detailsFragment.setArguments(savedInstanceState);
+        }
         imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.text);
         frameLayout = (FrameLayout) findViewById(R.id.frm);
@@ -80,14 +79,24 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         AppEventsLogger.deactivateApp(this, getResources().getString(R.string.facebook_app_id));
     }
 
+
+    public boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() == null) {
+            return false;
+        } else return connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
     @Override
     public void someEvent(Integer position) {
         this.position = position;
         if (singleton.isDataBase() == true) menuSave.setEnabled(false);
         else menuSave.setEnabled(true);
-        if (fragment2 == null) {
+        if (detailsFragment == null) {
             Intent intent = new Intent();
             intent.putExtra(IDE_EXTRA, position);
+            intent.putExtra(IDE_EXTRA_BOOL, isOnline);
             intent.setClass(this, DetailsActivity.class);
             startActivityForResult(intent, ACTION_EDIT);
         }
@@ -108,7 +117,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuBack = menu.findItem(R.id.IDM_BACK);
         menuSave = menu.findItem(R.id.IDM_SAVE).setEnabled(false);
-        if (fragment2 == null) {
+        if (detailsFragment == null) {
             menuBack.setVisible(false);
             menuSave.setVisible(false);
         }
@@ -160,21 +169,6 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
 
 
             case R.id.IDM_DELETE:
-
-                try {
-                    PackageInfo info = getPackageManager().getPackageInfo(
-                            "com.facebook.samples.hellofacebook",
-                            PackageManager.GET_SIGNATURES);
-                    for (Signature signature : info.signatures) {
-                        MessageDigest md = MessageDigest.getInstance("SHA");
-                        md.update(signature.toByteArray());
-                        Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-                    }
-                } catch (PackageManager.NameNotFoundException e) {
-
-                } catch (NoSuchAlgorithmException e) {
-                }
-
                 dataBase.showSavedArticles(this);
                 if (dataBase.isCursorToFirst()) {
                     arrayDelete = dataBase.showSavedArticles(this);
@@ -210,7 +204,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (fragment2 != null) {
+        if (detailsFragment != null) {
             String text = (String) textView.getText();
             try {
                 byte[] bytes = getByteArrayFromBitmap(((BitmapDrawable) imageView.getDrawable()).
@@ -244,7 +238,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (fragment2 != null) {
+        if (detailsFragment != null) {
             textView.setText(savedInstanceState.getString("text"));
             try {
                 imageView.setImageBitmap(new BaseFragment().getBitmapFromByteArray(savedInstanceState
