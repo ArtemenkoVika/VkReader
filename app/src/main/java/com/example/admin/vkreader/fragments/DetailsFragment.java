@@ -73,11 +73,11 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.btn_facebook:
                 try {
-                    facebookPublish();
+                    //facebookPublish();
 
-//                    Intent intent = new Intent();
-//                    intent.setClass(getActivity(), FacebookShareActivity.class);
-//                    startActivityForResult(intent, 1);
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), FacebookShareActivity.class);
+                    startActivityForResult(intent, 1);
                 } catch (Exception e) {
                 }
                 break;
@@ -100,17 +100,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
-        //shareIntent.putExtra(Intent.EXTRA_TEXT, resultClass.getUrls().get(position));
-        shareIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                Html.fromHtml(new StringBuilder()
-                        .append("<p><b>Some Content</b></p>")
-                        .append("<a>http://www.google.com</a>")
-                        .append("<small><p>More content</p></small>")
-                        .toString())
-        );
-//                putExtra(Intent.EXTRA_HTML_TEXT, Html.fromHtml
-//                ("<p>" + resultClass.getText().get(position) + "</p>"));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, resultClass.getTitle().get(position));
         startActivity(shareIntent);
     }
 
