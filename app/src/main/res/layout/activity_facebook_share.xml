@@ -5,11 +5,4 @@
     android:layout_height="match_parent"
     tools:context="com.example.admin.vkreader.activity.FacebookShareActivity">
 
-    <fragment
-        android:id="@+id/facebook_activity"
-        class="com.example.admin.vkreader.fragments.FacebookFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout="@layout/fragment_facebook"></fragment>
-
 </RelativeLayout>

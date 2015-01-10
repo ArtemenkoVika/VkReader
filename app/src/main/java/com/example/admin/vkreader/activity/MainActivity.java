@@ -18,11 +18,9 @@ import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.fragments.BaseFragment;
 import com.example.admin.vkreader.fragments.DetailsFragment;
-import com.example.admin.vkreader.fragments.FacebookFragment;
 import com.example.admin.vkreader.fragments.ListFragment;
 import com.example.admin.vkreader.service.UpdateService;
 import com.facebook.AppEventsLogger;
-import com.facebook.Session;
 
 import java.util.ArrayList;
 

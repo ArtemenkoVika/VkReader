@@ -10,8 +10,17 @@ public class Singleton {
     private CustomAdapter arrayAdapter;
     private boolean isDataBase = false;
     private ArrayList id;
+    private int position;
 
     private Singleton() {
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public synchronized static final Singleton getInstance() {

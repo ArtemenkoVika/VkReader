@@ -8,16 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.activity.FacebookShareActivity;
 import com.example.admin.vkreader.activity.GoogleShareActivity;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.FacebookException;
-import com.facebook.Session;
-import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
 import com.google.android.gms.plus.PlusShare;
 
 public class DetailsFragment extends BaseFragment implements View.OnClickListener {
@@ -46,7 +41,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         buttonFacebook.setOnClickListener(this);
         buttonGoogle = (Button) view.findViewById(R.id.btn_g_plus);
         buttonGoogle.setOnClickListener(this);
-        if (isOnline) {
+        if (isOnline || !singleton.isDataBase()) {
             buttonFacebook.setVisibility(View.VISIBLE);
             buttonGoogle.setVisibility(View.VISIBLE);
         } else {
@@ -104,7 +99,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, resultClass.getTitle().get(position));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://vk.com/christian_parable");
         startActivity(shareIntent);
     }
 

@@ -52,22 +52,22 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_my_list, container, false);
         final String appId = Utility.getMetadataApplicationId(getActivity());
-        AsyncTask<Void, Void, Utility.FetchedAppSettings> task = new AsyncTask<Void, Void,
-                Utility.FetchedAppSettings>() {
-            @Override
-            protected Utility.FetchedAppSettings doInBackground(Void... params) {
-                Utility.FetchedAppSettings settings = Utility.queryAppSettings(appId, true);
-                return settings;
-            }
-
-            @Override
-            protected void onPostExecute(Utility.FetchedAppSettings result) {
+//        AsyncTask<Void, Void, Utility.FetchedAppSettings> task = new AsyncTask<Void, Void,
+//                Utility.FetchedAppSettings>() {
+//            @Override
+//            protected Utility.FetchedAppSettings doInBackground(Void... params) {
+//                Utility.FetchedAppSettings settings = Utility.queryAppSettings(appId, true);
+//                return settings;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Utility.FetchedAppSettings result) {
                 LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
                 authButton.setFragment(ListFragment.this);
                 authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-            }
-        };
-        task.execute((Void[]) null);
+//            }
+//        };
+//        task.execute((Void[]) null);
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
@@ -135,6 +135,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         this.position = position;
+        singleton.setPosition(position);
         someEventListener.someEvent(position);
         if (fragment2 != null) {
             try {
