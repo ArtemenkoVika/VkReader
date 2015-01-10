@@ -1,6 +1,7 @@
 package com.example.admin.vkreader.fragments;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,8 +19,11 @@ import com.example.admin.vkreader.activity.MainActivity;
 import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
+import com.facebook.internal.Utility;
+import com.facebook.widget.LoginButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class ListFragment extends BaseFragment implements AdapterView.OnItemClickListener,
@@ -32,6 +36,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     private LinearLayout linearLayout;
     private boolean isOnline;
     private ArrayList list = new ArrayList();
+    private View view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,27 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_list, container, false);
+        view = inflater.inflate(R.layout.fragment_my_list, container, false);
+
+
+//        final String appId = Utility.getMetadataApplicationId(getActivity());
+//        AsyncTask<Void, Void, Utility.FetchedAppSettings> task = new AsyncTask<Void, Void, Utility.FetchedAppSettings>() {
+//            @Override
+//            protected Utility.FetchedAppSettings doInBackground(Void... params) {
+//                Utility.FetchedAppSettings settings = Utility.queryAppSettings(appId, true);
+//                return settings;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Utility.FetchedAppSettings result) {
+//                //showNuxPerSettings(result);
+//            }
+//        };
+//        task.execute((Void[])null);
+
+
+
+
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);

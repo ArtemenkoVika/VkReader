@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.ListFragment">
 
+
+
     <ListView
         android:id="@+id/my_list"
         android:layout_width="match_parent"
