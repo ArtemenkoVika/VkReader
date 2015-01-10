@@ -27,14 +27,13 @@ public class FacebookShareActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_share);
-        AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
-                facebook_app_id));
         uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedInstanceState);
         Session session = Session.getActiveSession();
         if (session == null) {
             if (savedInstanceState != null) {
                 session = Session.restoreSession(this, null, callback, savedInstanceState);
-                uiHelper.onCreate(savedInstanceState);
+                //uiHelper.onCreate(savedInstanceState);
             }
             if (session == null) {
                 session = new Session(this);
@@ -91,7 +90,7 @@ public class FacebookShareActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.facebook_app_id));
+        AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.facebook_app_id));
         Session session = Session.getActiveSession();
         if (session != null && (session.isOpened() || session.isClosed())) {
             new FacebookFragment().onSessionStateChange(session.getState());

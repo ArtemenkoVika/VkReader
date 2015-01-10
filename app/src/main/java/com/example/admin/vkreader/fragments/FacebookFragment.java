@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
@@ -20,7 +19,6 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.LoginButton;
 import com.facebook.widget.WebDialog;
 
 import org.json.JSONException;
@@ -30,8 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class FacebookFragment extends Fragment implements View.OnClickListener {
-    private Button shareButton;
+public class FacebookFragment extends Fragment {
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
     private static final String PENDING_PUBLISH_KEY = "pendingPublishReauthorization";
     private boolean pendingPublishReauthorization = false;
@@ -47,11 +44,8 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
         if (savedInstanceState != null) {
             pendingPublishReauthorization = savedInstanceState.getBoolean(PENDING_PUBLISH_KEY, false);
         }
-        LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
-        authButton.setFragment(this);
-        authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-        shareButton = (Button) view.findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(this);
+        facebookPublish("name", "caption", "description", "https://developers.facebook.com/android",
+                "https://raw.github.com/fbsamples/ios-3.x-howtos/master/Images/iossdk_logo.png");
         return view;
     }
 
@@ -65,14 +59,14 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
 
     public void onSessionStateChange(SessionState state) {
         if (state.isOpened()) {
-            shareButton.setVisibility(View.VISIBLE);
-            shareButton.setOnClickListener(this);
+//            shareButton.setVisibility(View.VISIBLE);
+//            shareButton.setOnClickListener(this);
             if (pendingPublishReauthorization &&
                     state.equals(SessionState.OPENED_TOKEN_UPDATED)) {
                 pendingPublishReauthorization = false;
                 publishStory();
             } else if (state.isClosed()) {
-                shareButton.setVisibility(View.INVISIBLE);
+                //shareButton.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -189,7 +183,6 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
                                 Toast.makeText(getActivity().getApplicationContext(),
                                         "Запись не опубликована", Toast.LENGTH_LONG);
                             }
-                            ;
                         }
 
                         ;
@@ -197,18 +190,5 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
                     .build();
             feedDialog.show();
         }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.shareButton:
-                facebookPublish("name", "caption", "description", "https://developers.facebook.com/android",
-                        "https://raw.github.com/fbsamples/ios-3.x-howtos/master/Images/iossdk_logo.png");
-                break;
-            default:
-                break;
-        }
-
     }
 }

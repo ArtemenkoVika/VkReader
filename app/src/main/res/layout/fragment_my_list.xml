@@ -7,7 +7,11 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.ListFragment">
 
-
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
     <ListView
         android:id="@+id/my_list"

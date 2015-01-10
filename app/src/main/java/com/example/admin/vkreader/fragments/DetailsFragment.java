@@ -8,11 +8,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.activity.FacebookShareActivity;
 import com.example.admin.vkreader.activity.GoogleShareActivity;
 import com.example.admin.vkreader.patterns.Singleton;
+import com.facebook.FacebookException;
+import com.facebook.Session;
+import com.facebook.widget.FacebookDialog;
+import com.facebook.widget.WebDialog;
 import com.google.android.gms.plus.PlusShare;
 
 public class DetailsFragment extends BaseFragment implements View.OnClickListener {

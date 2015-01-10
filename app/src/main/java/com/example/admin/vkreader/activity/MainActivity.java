@@ -18,9 +18,11 @@ import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.fragments.BaseFragment;
 import com.example.admin.vkreader.fragments.DetailsFragment;
+import com.example.admin.vkreader.fragments.FacebookFragment;
 import com.example.admin.vkreader.fragments.ListFragment;
 import com.example.admin.vkreader.service.UpdateService;
 import com.facebook.AppEventsLogger;
+import com.facebook.Session;
 
 import java.util.ArrayList;
 
@@ -68,17 +70,17 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
-        AppEventsLogger.activateApp(this, getResources().getString(R.string.facebook_app_id));
+        AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
+                facebook_app_id));
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         AppEventsLogger.deactivateApp(this, getResources().getString(R.string.facebook_app_id));
     }
-
 
     public boolean isOnline() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
@@ -223,7 +225,11 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             outState.putInt("visibility", visibility);
             outState.putInt("imVis", imVis);
         }
-        int check = listView.getCheckedItemPosition();
+        int check = 0;
+        try {
+            check = listView.getCheckedItemPosition();
+        } catch (NullPointerException e) {
+        }
         boolean b1 = false;
         boolean b2 = false;
         if (dialogDelete != null) b1 = dialogDelete.isShowing();
@@ -258,8 +264,11 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
                 else menuSave.setEnabled(false);
             }
         }
-        listView.setItemChecked(savedInstanceState.getInt("check"), true);
-        listView.setSelection(savedInstanceState.getInt("check"));
+        try {
+            listView.setItemChecked(savedInstanceState.getInt("check"), true);
+            listView.setSelection(savedInstanceState.getInt("check"));
+        } catch (NullPointerException e) {
+        }
         back = savedInstanceState.getBoolean("back");
         singleton.setDataBase(savedInstanceState.getBoolean("isDataBase"));
         if (savedInstanceState.getBoolean("b1")) {

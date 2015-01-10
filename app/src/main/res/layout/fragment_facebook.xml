@@ -6,20 +6,4 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.FacebookFragment">
 
-    <Button
-        android:id="@+id/shareButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:text="@string/share"
-        android:textStyle="bold"/>
-
-    <com.facebook.widget.LoginButton
-        android:id="@+id/authButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"/>
-
 </LinearLayout>
