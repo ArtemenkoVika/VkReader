@@ -7,7 +7,6 @@ import android.view.MenuItem;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.fragments.DetailsFragment;
-import com.facebook.AppEventsLogger;
 
 public class DetailsActivity extends BaseActivity {
     private Fragment fragment2;
@@ -68,17 +67,5 @@ public class DetailsActivity extends BaseActivity {
         boolean menu_vis = savedInstanceState.getBoolean("menu_vis");
         if (menu_vis) menuSave.setEnabled(true);
         else menuSave.setEnabled(false);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        AppEventsLogger.activateApp(this, getResources().getString(R.string.facebook_app_id));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        AppEventsLogger.deactivateApp(this, getResources().getString(R.string.facebook_app_id));
     }
 }

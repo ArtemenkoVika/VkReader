@@ -7,6 +7,10 @@
         android:showAsAction="always"
         android:title="" />
     <item
+        android:id="@+id/IDM_SHARE"
+        android:showAsAction="always"
+        android:title="share" />
+    <item
         android:id="@+id/IDM_BACK_TO_MAIN"
         android:showAsAction="always"
         android:title="@string/back_to_main" />

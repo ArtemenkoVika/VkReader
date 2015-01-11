@@ -1,6 +1,7 @@
 package com.example.admin.vkreader.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,7 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         buttonFacebook.setOnClickListener(this);
         buttonGoogle = (Button) view.findViewById(R.id.btn_g_plus);
         buttonGoogle.setOnClickListener(this);
-        if (isOnline || !singleton.isDataBase()) {
+        if (isOnline && !singleton.isDataBase()) {
             buttonFacebook.setVisibility(View.VISIBLE);
             buttonGoogle.setVisibility(View.VISIBLE);
         } else {
@@ -72,8 +73,6 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.btn_facebook:
                 try {
-                    //facebookPublish();
-
                     Intent intent = new Intent();
                     intent.setClass(getActivity(), FacebookShareActivity.class);
                     startActivityForResult(intent, 1);
@@ -95,19 +94,10 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
         }
     }
 
-    public void facebookPublish() {
-        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://vk.com/christian_parable");
-        startActivity(shareIntent);
-    }
-
     public void googlePlusPublish() {
         Intent shareIntent = new PlusShare.Builder(getActivity())
                 .setType("text/plain")
-                .setText(resultClass.getText().get(position))
-                        //.setContentUrl(Uri.parse("https://developers.google.com/+/"))
+                .setContentUrl(Uri.parse("https://vk.com/christian_parable"))
                 .getIntent();
         startActivityForResult(shareIntent, GoogleShareActivity.REQUEST_CODE_RESOLVE);
     }

@@ -1,7 +1,6 @@
 package com.example.admin.vkreader.fragments;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,7 +18,8 @@ import com.example.admin.vkreader.activity.MainActivity;
 import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.internal.Utility;
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.widget.LoginButton;
 
 import java.util.ArrayList;
@@ -51,23 +51,6 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_my_list, container, false);
-        final String appId = Utility.getMetadataApplicationId(getActivity());
-//        AsyncTask<Void, Void, Utility.FetchedAppSettings> task = new AsyncTask<Void, Void,
-//                Utility.FetchedAppSettings>() {
-//            @Override
-//            protected Utility.FetchedAppSettings doInBackground(Void... params) {
-//                Utility.FetchedAppSettings settings = Utility.queryAppSettings(appId, true);
-//                return settings;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Utility.FetchedAppSettings result) {
-                LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
-                authButton.setFragment(ListFragment.this);
-                authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-//            }
-//        };
-//        task.execute((Void[]) null);
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
@@ -81,6 +64,9 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         listView = (ListView) view.findViewById(R.id.my_list);
         try {
             if (isOnline) {
+                LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
+                authButton.setFragment(ListFragment.this);
+                authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
                 if (resultClass.getTitle() == null) {
                     resultClass.setTitle(new ArrayList<String>());
                     resultClass.setText(new ArrayList<String>());
@@ -109,6 +95,15 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         }
         return view;
     }
+
+    private Session.StatusCallback statusCallback = new SessionStatusCallback();
+
+    private class SessionStatusCallback implements Session.StatusCallback {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+        }
+    }
+
 
     @Override
     public void onClick(View v) {

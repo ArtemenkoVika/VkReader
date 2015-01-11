@@ -196,6 +196,15 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
                 return true;
 
 
+            case R.id.IDM_SHARE:
+                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "https://vk.com/christian_parable");
+                startActivity(shareIntent);
+                return true;
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -5,37 +5,30 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusOneButton;
 
-import java.net.URL;
-
 public class GoogleShareActivity extends FragmentActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static final int REQUEST_CODE_RESOLVE = 9000;
     private ProgressDialog mConnectionProgressDialog;
-    private PlusClient mPlusClient;
+    private GoogleApiClient mPlusClient;
     private PlusOneButton mPlusOneButton;
     private ConnectionResult mConnectionResult;
-    private URL url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_share);
         mPlusOneButton = (PlusOneButton) findViewById(R.id.plus_one_button);
-
-//        mPlusClient = new PlusClient.Builder(this, this, this)
-//                .setVisibleActivities("http://schemas.google.com/AddActivity", "http://schemas." +
-//                        "google.com/BuyActivity")
-//                .clearScopes()
-//                .build();
+        mPlusClient = new GoogleApiClient.Builder(this, this, this)
+                .addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .build();
         mPlusOneButton.initialize("https://developers.google.com/+/", REQUEST_CODE_RESOLVE);
         mConnectionProgressDialog = new ProgressDialog(this);
         mConnectionProgressDialog.setMessage("Signing in...");
@@ -79,12 +72,9 @@ public class GoogleShareActivity extends FragmentActivity implements
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
-        String accountName = mPlusClient.getAccountName();
-        Toast.makeText(this, accountName + " is connected.", Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void onDisconnected() {
-
+    public void onConnectionSuspended(int i) {
     }
 }
