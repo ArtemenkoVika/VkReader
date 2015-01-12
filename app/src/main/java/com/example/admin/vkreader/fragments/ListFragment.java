@@ -18,8 +18,6 @@ import com.example.admin.vkreader.activity.MainActivity;
 import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.Session;
-import com.facebook.SessionState;
 import com.facebook.widget.LoginButton;
 
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     private boolean isOnline;
     private ArrayList list = new ArrayList();
     private View view;
+    private LoginButton authButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,10 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
+        authButton = (LoginButton) view.findViewById(R.id.authButton);
+        authButton.setFragment(ListFragment.this);
+        authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
+        authButton.setVisibility(View.GONE);
         frameLayout = (FrameLayout) getActivity().findViewById(R.id.frm);
         fragment2 = getActivity().getSupportFragmentManager().findFragmentById(R.id.details_frag);
         if (fragment2 != null) {
@@ -64,9 +67,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         listView = (ListView) view.findViewById(R.id.my_list);
         try {
             if (isOnline) {
-                LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
-                authButton.setFragment(ListFragment.this);
-                authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
+                authButton.setVisibility(View.VISIBLE);
                 if (resultClass.getTitle() == null) {
                     resultClass.setTitle(new ArrayList<String>());
                     resultClass.setText(new ArrayList<String>());
@@ -95,15 +96,6 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         }
         return view;
     }
-
-    private Session.StatusCallback statusCallback = new SessionStatusCallback();
-
-    private class SessionStatusCallback implements Session.StatusCallback {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
