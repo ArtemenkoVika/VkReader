@@ -33,6 +33,8 @@ public class BaseActivity extends FragmentActivity implements DialogInterface.On
     protected ImageView imageView;
     protected Fragment detailsFragment;
     protected MenuItem menuSave;
+    protected MenuItem menuFacebook;
+    protected MenuItem menuGoogle;
     protected boolean back = false;
     protected AlertDialog dialogDelete;
     protected AlertDialog dialogInfo;

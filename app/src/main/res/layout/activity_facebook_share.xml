@@ -6,55 +6,11 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.activity.FacebookShareActivity">
 
-    <LinearLayout
-        android:id="@+id/linear_b"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/app_blue"
-        android:orientation="horizontal">
+    <fragment
+        android:id="@+id/facebook_fragment"
+        class="com.example.admin.vkreader.fragments.FacebookFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_facebook"></fragment>
 
-        <Button
-            android:id="@+id/share_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="ShareDialog" />
-
-        <Button
-            android:id="@+id/profile_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="Profile" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/app_blue"
-        android:orientation="horizontal">
-
-        <com.facebook.widget.ProfilePictureView
-            android:id="@+id/profileView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0" />
-
-        <TextView
-            android:id="@+id/nik"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
 </LinearLayout>

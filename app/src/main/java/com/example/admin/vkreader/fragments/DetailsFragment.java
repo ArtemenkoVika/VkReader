@@ -99,6 +99,6 @@ public class DetailsFragment extends BaseFragment implements View.OnClickListene
                 .setType("text/plain")
                 .setContentUrl(Uri.parse("https://vk.com/christian_parable"))
                 .getIntent();
-        startActivityForResult(shareIntent, GoogleShareActivity.REQUEST_CODE_RESOLVE);
+        startActivityForResult(shareIntent, GoogleShareActivity.REQUEST_CODE_RESOLVE_ERR);
     }
 }

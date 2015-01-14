@@ -26,4 +26,13 @@
         android:id="@+id/IDM_DELETE"
         android:showAsAction="always"
         android:title="@string/delete" />
+
+    <item
+        android:id="@+id/IDM_FACEBOOK"
+        android:showAsAction="always"
+        android:title="Facebook" />
+    <item
+        android:id="@+id/IDM_GOOGLE"
+        android:showAsAction="always"
+        android:title="Google+" />
 </menu>

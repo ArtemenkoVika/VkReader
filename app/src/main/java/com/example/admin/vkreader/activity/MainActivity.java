@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.fragments.BaseFragment;
-import com.example.admin.vkreader.fragments.DetailsFragment;
 import com.example.admin.vkreader.fragments.ListFragment;
 import com.example.admin.vkreader.service.UpdateService;
 import com.facebook.AppEventsLogger;
@@ -57,11 +56,6 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         savedInstanceState.putBoolean(IDE_BUNDLE_BOOL, isOnline);
         listFragment.setArguments(savedInstanceState);
         detailsFragment = getSupportFragmentManager().findFragmentById(R.id.details_frag);
-        if (detailsFragment != null) {
-            //savedInstanceState = new Bundle();
-            savedInstanceState.putBoolean(DetailsFragment.ARG_BOOL, isOnline);
-            detailsFragment.setArguments(savedInstanceState);
-        }
         imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.text);
         frameLayout = (FrameLayout) findViewById(R.id.frm);
@@ -117,9 +111,22 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuBack = menu.findItem(R.id.IDM_BACK);
         menuSave = menu.findItem(R.id.IDM_SAVE).setEnabled(false);
+        menuFacebook = menu.findItem(R.id.IDM_FACEBOOK);
+        menuGoogle = menu.findItem(R.id.IDM_GOOGLE);
+
+        if (!isOnline) {
+            menuFacebook.setVisible(false);
+            menuGoogle.setVisible(false);
+        } else {
+            menuFacebook.setVisible(true);
+            menuGoogle.setVisible(true);
+        }
+
         if (detailsFragment == null) {
             menuBack.setVisible(false);
             menuSave.setVisible(false);
+            menuFacebook.setVisible(false);
+            menuGoogle.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -202,6 +209,14 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
                 shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject text here");
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "https://vk.com/christian_parable");
                 startActivity(shareIntent);
+                return true;
+
+
+            case R.id.IDM_FACEBOOK:
+                return true;
+
+
+            case R.id.IDM_GOOGLE:
                 return true;
 
 

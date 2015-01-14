@@ -18,10 +18,8 @@ import com.example.admin.vkreader.activity.MainActivity;
 import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.widget.LoginButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class ListFragment extends BaseFragment implements AdapterView.OnItemClickListener,
@@ -35,7 +33,6 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     private boolean isOnline;
     private ArrayList list = new ArrayList();
     private View view;
-    private LoginButton authButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +50,6 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
-        authButton = (LoginButton) view.findViewById(R.id.authButton);
-        authButton.setFragment(ListFragment.this);
-        authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-        authButton.setVisibility(View.GONE);
         frameLayout = (FrameLayout) getActivity().findViewById(R.id.frm);
         fragment2 = getActivity().getSupportFragmentManager().findFragmentById(R.id.details_frag);
         if (fragment2 != null) {
@@ -67,7 +60,6 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         listView = (ListView) view.findViewById(R.id.my_list);
         try {
             if (isOnline) {
-                authButton.setVisibility(View.VISIBLE);
                 if (resultClass.getTitle() == null) {
                     resultClass.setTitle(new ArrayList<String>());
                     resultClass.setText(new ArrayList<String>());

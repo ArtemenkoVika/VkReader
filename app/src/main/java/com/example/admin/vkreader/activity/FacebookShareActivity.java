@@ -29,40 +29,44 @@ import com.facebook.widget.WebDialog;
 
 import java.util.concurrent.ExecutionException;
 
-public class FacebookShareActivity extends FragmentActivity implements View.OnClickListener {
+public class FacebookShareActivity extends FragmentActivity /*implements View.OnClickListener */{
     private UiLifecycleHelper uiHelper = null;
     private Singleton singleton = Singleton.getInstance();
     private ResultClass resultClass = ResultClass.getInstance();
-    private boolean pendingPublishReauthorization = false;
     private Button shareButton;
     private Button profileButton;
     private TextView textView;
     private ProfilePictureView profilePictureView;
-    private String userName = "";
-    private String userId = "";
+
 
     public UiLifecycleHelper getUiHelper() {
         return uiHelper;
+    }
+
+    public void setUiHelper(UiLifecycleHelper uiHelper) {
+        this.uiHelper = uiHelper;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_share);
-        uiHelper = new UiLifecycleHelper(this, null);
+
+        uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
+
         Session session = Session.restoreSession(this, null, callback, savedInstanceState);
         Session.setActiveSession(session);
         Session.openActiveSession(this, true, callback);
+
         shareButton = (Button) findViewById(R.id.share_button);
         profileButton = (Button) findViewById(R.id.profile_button);
         textView = (TextView) findViewById(R.id.nik);
         profilePictureView = (ProfilePictureView) findViewById(R.id.profileView);
-
-        shareButton.setOnClickListener(this);
-        profileButton.setOnClickListener(this);
-        textView.setVisibility(View.GONE);
-        profilePictureView.setVisibility(View.GONE);
+        //shareButton.setOnClickListener(this);
+        //profileButton.setOnClickListener(this);
+        //textView.setVisibility(View.GONE);
+        //profilePictureView.setVisibility(View.GONE);
     }
 
     public Session.StatusCallback callback = new Session.StatusCallback() {
@@ -76,10 +80,16 @@ public class FacebookShareActivity extends FragmentActivity implements View.OnCl
                     public void onCompleted(GraphUser user, Response response) {
                         System.out.println("Complete");
                         if (user != null) {
-                            userName = user.getName();
-                            userId = user.getId();
+                            singleton.setUserName(user.getName());
+                            singleton.setUserId(user.getId());
+                            shareButton.setVisibility(View.VISIBLE);
+                            profileButton.setVisibility(View.VISIBLE);
                             System.out.println(user.getName());
                         } else {
+                            shareButton.setVisibility(View.INVISIBLE);
+                            profileButton.setVisibility(View.INVISIBLE);
+                            textView.setVisibility(View.INVISIBLE);
+                            profilePictureView.setVisibility(View.INVISIBLE);
                             System.out.println("User NULL");
                         }
                     }
@@ -113,19 +123,7 @@ public class FacebookShareActivity extends FragmentActivity implements View.OnCl
         super.onResume();
         AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
                 facebook_app_id));
-        Session session = Session.getActiveSession();
-        if (session != null && (session.isOpened() || session.isClosed())) {
-            onSessionStateChange(session.getState());
-        }
         uiHelper.onResume();
-    }
-
-    public void onSessionStateChange(SessionState state) {
-        if (state.isOpened()) {
-            if (pendingPublishReauthorization && state.equals(SessionState.OPENED_TOKEN_UPDATED)) {
-                pendingPublishReauthorization = false;
-            }
-        }
     }
 
     @Override
@@ -147,83 +145,83 @@ public class FacebookShareActivity extends FragmentActivity implements View.OnCl
         uiHelper.onDestroy();
     }
 
-    public final void facebookPublish(String name, String caption, String description, String link, String pictureLink) {
-        if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.
-                ShareDialogFeature.SHARE_DIALOG)) {
-            //Facebook-client is installed
-            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                    .setName(name)
-                    .setCaption(caption)
-                    .setDescription(description)
-                    .setLink(link)
-                    .setPicture(pictureLink)
-                    .build();
-            try {
-                getUiHelper().trackPendingDialogCall
-                        (shareDialog.present());
-            } catch (NullPointerException e) {
-            }
-        } else {
-            //Facebook-client is not installed – use web-dialog
-            Bundle params = new Bundle();
-            params.putString("name", name);
-            params.putString("caption", caption);
-            params.putString("description", description);
-            params.putString("link", link);
-            params.putString("picture", pictureLink);
-            WebDialog feedDialog = new WebDialog.FeedDialogBuilder(this,
-                    Session.getActiveSession(), params)
-                    .setOnCompleteListener(new WebDialog.OnCompleteListener() {
-                        //Listener for web-dialog
-                        @Override
-                        public void onComplete(Bundle values, FacebookException error) {
-                            if ((values != null) && (values.getString("post_id") != null) &&
-                                    (error == null)) {
-                                Toast.makeText(getApplicationContext(),
-                                        "This entry was posted",
-                                        Toast.LENGTH_LONG);
-                            } else {
-                                Toast.makeText(getApplicationContext(),
-                                        "This entry was posted", Toast.LENGTH_LONG);
-                            }
-                        }
-                    })
-                    .build();
-            feedDialog.show();
-        }
-    }
+//    public final void facebookPublish(String name, String caption, String description, String link, String pictureLink) {
+//        if (FacebookDialog.canPresentShareDialog(getApplicationContext(), FacebookDialog.
+//                ShareDialogFeature.SHARE_DIALOG)) {
+//            //Facebook-client is installed
+//            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+//                    .setName(name)
+//                    .setCaption(caption)
+//                    .setDescription(description)
+//                    .setLink(link)
+//                    .setPicture(pictureLink)
+//                    .build();
+//            try {
+//                getUiHelper().trackPendingDialogCall
+//                        (shareDialog.present());
+//            } catch (NullPointerException e) {
+//            }
+//        } else {
+//            //Facebook-client is not installed – use web-dialog
+//            Bundle params = new Bundle();
+//            params.putString("name", name);
+//            params.putString("caption", caption);
+//            params.putString("description", description);
+//            params.putString("link", link);
+//            params.putString("picture", pictureLink);
+//            WebDialog feedDialog = new WebDialog.FeedDialogBuilder(this,
+//                    Session.getActiveSession(), params)
+//                    .setOnCompleteListener(new WebDialog.OnCompleteListener() {
+//                        //Listener for web-dialog
+//                        @Override
+//                        public void onComplete(Bundle values, FacebookException error) {
+//                            if ((values != null) && (values.getString("post_id") != null) &&
+//                                    (error == null)) {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "This entry was posted",
+//                                        Toast.LENGTH_LONG);
+//                            } else {
+//                                Toast.makeText(getApplicationContext(),
+//                                        "This entry was posted", Toast.LENGTH_LONG);
+//                            }
+//                        }
+//                    })
+//                    .build();
+//            feedDialog.show();
+//        }
+//    }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.share_button:
-                facebookPublish(resultClass.getTitle().get(singleton.getPosition()), "",
-                        resultClass.getText().get(singleton.getPosition()),
-                        "https://vk.com/christian_parable",
-                        resultClass.getUrls().get(singleton.getPosition()));
-                break;
-            case R.id.profile_button:
-                textView.setText(userName);
-
-                LoadImageFromNetwork load = new LoadImageFromNetwork(this);
-                load.execute("http://graph.facebook.com/" + userId + "/picture?type=large");
-                try {
-                    profilePictureView.setDefaultProfilePicture(load.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                shareButton.setVisibility(View.GONE);
-                profileButton.setVisibility(View.GONE);
-                textView.setVisibility(View.VISIBLE);
-                profilePictureView.setVisibility(View.VISIBLE);
-                break;
-            default:
-                break;
-        }
-    }
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//            case R.id.share_button:
+//                facebookPublish(resultClass.getTitle().get(singleton.getPosition()), "",
+//                        resultClass.getText().get(singleton.getPosition()),
+//                        "https://vk.com/christian_parable",
+//                        resultClass.getUrls().get(singleton.getPosition()));
+//                break;
+//            case R.id.profile_button:
+//                textView.setText(userName);
+//
+//                LoadImageFromNetwork load = new LoadImageFromNetwork(this);
+//                load.execute("http://graph.facebook.com/" + userId + "/picture?type=large");
+//                try {
+//                    profilePictureView.setDefaultProfilePicture(load.get());
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                shareButton.setVisibility(View.GONE);
+//                profileButton.setVisibility(View.GONE);
+//                textView.setVisibility(View.VISIBLE);
+//                profilePictureView.setVisibility(View.VISIBLE);
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -235,16 +233,16 @@ public class FacebookShareActivity extends FragmentActivity implements View.OnCl
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.IDM_BACK_SHARE:
-                if (shareButton.getVisibility() == View.GONE) {
-                    shareButton.setVisibility(View.VISIBLE);
-                    profileButton.setVisibility(View.VISIBLE);
-                    textView.setVisibility(View.GONE);
-                    profilePictureView.setVisibility(View.GONE);
-                    return true;
-                } else {
+//                if (shareButton.getVisibility() == View.GONE) {
+//                    shareButton.setVisibility(View.VISIBLE);
+//                    profileButton.setVisibility(View.VISIBLE);
+//                    textView.setVisibility(View.GONE);
+//                    profilePictureView.setVisibility(View.GONE);
+//                    return true;
+//                } else {
                     onBackPressed();
                     return true;
-                }
+               // }
             default:
                 return super.onOptionsItemSelected(item);
         }

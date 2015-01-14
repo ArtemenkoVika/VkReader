@@ -36,6 +36,15 @@ public class DetailsActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuSave = menu.findItem(R.id.IDM_SAVE);
+        menuFacebook = menu.findItem(R.id.IDM_FACEBOOK);
+        menuGoogle = menu.findItem(R.id.IDM_GOOGLE);
+        if (!isOnline) {
+            menuFacebook.setVisible(false);
+            menuGoogle.setVisible(false);
+        } else {
+            menuFacebook.setVisible(true);
+            menuGoogle.setVisible(true);
+        }
         if (singleton.isDataBase() == true) menuSave.setEnabled(false);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -43,12 +52,22 @@ public class DetailsActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.IDM_BACK:
                 onBackPressed();
                 return true;
+
             case R.id.IDM_SAVE:
                 saveArticles(menuSave);
                 return true;
+
+            case R.id.IDM_FACEBOOK:
+                return true;
+
+
+            case R.id.IDM_GOOGLE:
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

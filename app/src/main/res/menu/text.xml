@@ -7,13 +7,13 @@
         android:showAsAction="always"
         android:title="" />
     <item
-        android:id="@+id/IDM1"
+        android:id="@+id/IDM_FACEBOOK"
         android:showAsAction="always"
-        android:title="" />
+        android:title="Facebook" />
     <item
-        android:id="@+id/IDM2"
+        android:id="@+id/IDM_GOOGLE"
         android:showAsAction="always"
-        android:title="" />
+        android:title="Google+" />
     <item
         android:id="@+id/IDM_SAVE"
         android:showAsAction="always"

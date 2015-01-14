@@ -1,15 +1,66 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/google_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.admin.vkreader.activity.GoogleShareActivity">
 
-    <com.google.android.gms.plus.PlusOneButton
-        xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
-        android:id="@+id/plus_one_button"
+    <LinearLayout
+        android:id="@+id/g_button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        plus:annotation="inline"
-        plus:size="standard" />
-</RelativeLayout>
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/out_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OUT" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/g_share_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/g_share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Share on Google+" />
+
+        <Button
+            android:id="@+id/g_profile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/g_profile_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/g_plus_login_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/g_plus_login_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
