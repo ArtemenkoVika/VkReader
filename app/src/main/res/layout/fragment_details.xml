@@ -7,32 +7,13 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.DetailsFragment">
 
-    <LinearLayout
-        android:id="@+id/linear_b"
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/app_blue"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_facebook"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="Facebook"></Button>
-
-        <Button
-            android:id="@+id/btn_g_plus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="Google+"></Button>
-
-    </LinearLayout>
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/image"

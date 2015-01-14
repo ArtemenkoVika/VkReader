@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.admin.vkreader.activity.FacebookShareActivity" >
     <item
-        android:id="@+id/IDM_BACK_SHARE"
+        android:id="@+id/IDM_BACK_FACEBOOK"
         android:icon="@drawable/arrow"
         android:showAsAction="always"
         android:title="" />

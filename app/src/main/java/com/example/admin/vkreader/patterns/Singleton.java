@@ -6,29 +6,12 @@ import java.util.ArrayList;
 
 public class Singleton {
     public int count = 0;
+    public int count2 = 0;
     private static final Singleton instance = new Singleton();
     private CustomAdapter arrayAdapter;
     private boolean isDataBase = false;
     private ArrayList id;
     private int position;
-    private String userName = "";
-    private String userId = "";
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     private Singleton() {
     }

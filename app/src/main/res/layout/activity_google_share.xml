@@ -38,13 +38,15 @@
             android:id="@+id/g_share_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Share on Google+" />
+            android:text="Share on Google+"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/g_profile_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile" />
+            android:text="Profile"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout

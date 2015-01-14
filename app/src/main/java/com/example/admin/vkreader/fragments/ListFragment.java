@@ -14,7 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.admin.vkreader.R;
-import com.example.admin.vkreader.activity.MainActivity;
 import com.example.admin.vkreader.adapters.CustomAdapter;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
@@ -30,18 +29,8 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
     private ParseTask parseTask;
     private FrameLayout frameLayout;
     private LinearLayout linearLayout;
-    private boolean isOnline;
     private ArrayList list = new ArrayList();
     private View view;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            savedInstanceState = getArguments();
-            isOnline = savedInstanceState.getBoolean(MainActivity.IDE_BUNDLE_BOOL);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,7 +48,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         }
         listView = (ListView) view.findViewById(R.id.my_list);
         try {
-            if (isOnline) {
+            if (isOnline()) {
                 if (resultClass.getTitle() == null) {
                     resultClass.setTitle(new ArrayList<String>());
                     resultClass.setText(new ArrayList<String>());

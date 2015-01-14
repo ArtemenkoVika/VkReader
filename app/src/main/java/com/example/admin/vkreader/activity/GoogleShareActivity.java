@@ -6,6 +6,8 @@ import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +17,7 @@ import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
 import com.example.admin.vkreader.entity.ResultClass;
 import com.example.admin.vkreader.patterns.Singleton;
+import com.facebook.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,13 +30,14 @@ import java.util.concurrent.ExecutionException;
 public class GoogleShareActivity extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
-    public static final int REQUEST_CODE_RESOLVE_ERR = 9000;
+    public static final int REQUEST_CODE_RESOLVE = 9000;
     private GoogleApiClient mPlusClient;
     private SignInButton googleButton;
     private ProgressDialog mConnectionProgressDialog;
     private ConnectionResult mConnectionResult;
     private Button buttonOut;
     private Button buttonShare;
+    private Button buttonProfile;
     private Singleton singleton = Singleton.getInstance();
     private ResultClass resultClass = ResultClass.getInstance();
     private TextView textView;
@@ -50,15 +54,17 @@ public class GoogleShareActivity extends FragmentActivity implements
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .build();
         mConnectionProgressDialog = new ProgressDialog(this);
-        mConnectionProgressDialog.setMessage("Signing in...");
+        mConnectionProgressDialog.setMessage("Wait, pleas");
         mConnectionProgressDialog.setOwnerActivity(this);
-        mConnectionProgressDialog.setTitle("Title");
 
         googleButton = (SignInButton) findViewById(R.id.sign_in_button);
         googleButton.setOnClickListener(this);
 
         buttonOut = (Button) findViewById(R.id.out_button);
         buttonOut.setOnClickListener(this);
+
+        buttonProfile = (Button) findViewById(R.id.g_profile_button);
+        buttonProfile.setOnClickListener(this);
 
         buttonShare = (Button) findViewById(R.id.g_share_button);
         buttonShare.setOnClickListener(this);
@@ -83,6 +89,16 @@ public class GoogleShareActivity extends FragmentActivity implements
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
+        if (Plus.PeopleApi.getCurrentPerson(mPlusClient) != null) {
+            buttonProfile.setVisibility(View.VISIBLE);
+            buttonShare.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mConnectionProgressDialog.dismiss();
     }
 
     @Override
@@ -99,12 +115,14 @@ public class GoogleShareActivity extends FragmentActivity implements
                         mConnectionProgressDialog.show();
                     } else {
                         try {
-                            mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
+                            mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE);
                         } catch (IntentSender.SendIntentException e) {
                             mConnectionResult = null;
                             mPlusClient.connect();
                         }
                     }
+                    buttonProfile.setVisibility(View.VISIBLE);
+                    buttonShare.setVisibility(View.VISIBLE);
                 }
                 break;
 
@@ -113,6 +131,11 @@ public class GoogleShareActivity extends FragmentActivity implements
                     mPlusClient.disconnect();
                     mPlusClient.clearDefaultAccountAndReconnect();
                     mPlusClient.connect();
+
+                    buttonProfile.setVisibility(View.INVISIBLE);
+                    buttonShare.setVisibility(View.INVISIBLE);
+                    textView.setVisibility(View.INVISIBLE);
+                    imageView.setVisibility(View.INVISIBLE);
                 }
                 break;
 
@@ -130,23 +153,25 @@ public class GoogleShareActivity extends FragmentActivity implements
                     Person user = Plus.PeopleApi.getCurrentPerson(mPlusClient);
                     userName = user.getDisplayName();
                     userAvatar = user.getImage().getUrl();
+
+                    LoadImageFromNetwork load = new LoadImageFromNetwork(this);
+                    load.execute(userAvatar);
+                    try {
+                        imageView.setImageBitmap(load.get());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    textView.setText(userName);
+                    textView.setVisibility(View.VISIBLE);
+                    imageView.setVisibility(View.VISIBLE);
                 }
-                LoadImageFromNetwork load = new LoadImageFromNetwork(this);
-                load.execute(userAvatar);
-                try {
-                    imageView.setImageBitmap(load.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                textView.setText(userName);
                 break;
 
             default:
                 break;
         }
-
     }
 
     @Override
@@ -154,7 +179,7 @@ public class GoogleShareActivity extends FragmentActivity implements
         if (mConnectionProgressDialog.isShowing()) {
             if (result.hasResolution()) {
                 try {
-                    result.startResolutionForResult(this, REQUEST_CODE_RESOLVE_ERR);
+                    result.startResolutionForResult(this, REQUEST_CODE_RESOLVE);
                 } catch (IntentSender.SendIntentException e) {
                     mPlusClient.connect();
                 }
@@ -165,10 +190,61 @@ public class GoogleShareActivity extends FragmentActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-        if (requestCode == REQUEST_CODE_RESOLVE_ERR && responseCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_RESOLVE && responseCode == RESULT_OK) {
             mConnectionResult = null;
             mPlusClient.connect();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.google_share, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.IDM_BACK_GOOGLE:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        int visButtonProfile = buttonProfile.getVisibility();
+        int visButtonShare = buttonShare.getVisibility();
+        int visTextView = textView.getVisibility();
+        int visImageView = imageView.getVisibility();
+        String text = (String) textView.getText();
+
+        outState.putInt("visButtonProfile", visButtonProfile);
+        outState.putInt("visButtonShare", visButtonShare);
+        outState.putInt("visTextView", visTextView);
+        outState.putInt("visImageView", visImageView);
+        outState.putString("text", text);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        textView.setText(savedInstanceState.getString("text"));
+        savedInRotation(savedInstanceState, "visButtonProfile", buttonProfile);
+        savedInRotation(savedInstanceState, "visButtonShare", buttonShare);
+        savedInRotation(savedInstanceState, "visTextView", textView);
+        savedInRotation(savedInstanceState, "visImageView", imageView);
+    }
+
+    public void savedInRotation(Bundle savedInstanceState, String parameter, View view) {
+        if (savedInstanceState.getInt(parameter) == View.VISIBLE)
+            view.setVisibility(View.VISIBLE);
+        else view.setVisibility(View.INVISIBLE);
     }
 }
 

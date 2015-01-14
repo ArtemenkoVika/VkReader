@@ -1,9 +1,11 @@
 package com.example.admin.vkreader.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
@@ -62,5 +64,13 @@ public class BaseFragment extends Fragment {
 
     public Bitmap getBitmapFromByteArray(byte[] bitmap) {
         return BitmapFactory.decodeByteArray(bitmap, 0, bitmap.length);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getActiveNetworkInfo() == null) {
+            return false;
+        } else return connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

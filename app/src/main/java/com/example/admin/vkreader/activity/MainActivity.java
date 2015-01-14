@@ -1,9 +1,7 @@
 package com.example.admin.vkreader.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,35 +24,29 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity implements ListFragment.onSomeEventListener {
     public static final int ACTION_EDIT = 101;
     public static final String IDE_EXTRA = "param";
-    public static final String IDE_EXTRA_BOOL = "bool";
-    public static final String IDE_BUNDLE_BOOL = "bool";
     private ListFragment listFragment;
     private Intent intent;
     private FrameLayout frameLayout;
     private MenuItem menuBack;
-    private boolean isOnline;
     private ArrayList arrayFavorite;
     private ArrayList arrayDelete;
     private ListView listView;
+    private MenuItem menuShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isOnline = isOnline();
         intent = new Intent(this, UpdateService.class);
-        if (!isOnline) {
+        if (!isOnline()) {
             if (singleton.count == 0)
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.net),
                         Toast.LENGTH_LONG).show();
         }
         singleton.count++;
-        if (isOnline) startService(intent);
+        if (isOnline()) startService(intent);
         listFragment = new ListFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.frm, listFragment).commit();
-        savedInstanceState = new Bundle();
-        savedInstanceState.putBoolean(IDE_BUNDLE_BOOL, isOnline);
-        listFragment.setArguments(savedInstanceState);
         detailsFragment = getSupportFragmentManager().findFragmentById(R.id.details_frag);
         imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.text);
@@ -66,20 +58,13 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         super.onResume();
         AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
                 facebook_app_id));
+        singleton.count2 = 0;
     }
 
     @Override
     public void onPause() {
         super.onPause();
         AppEventsLogger.deactivateApp(this, getResources().getString(R.string.facebook_app_id));
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() == null) {
-            return false;
-        } else return connectivityManager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
     @Override
@@ -90,7 +75,6 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         if (detailsFragment == null) {
             Intent intent = new Intent();
             intent.putExtra(IDE_EXTRA, position);
-            intent.putExtra(IDE_EXTRA_BOOL, isOnline);
             intent.setClass(this, DetailsActivity.class);
             startActivityForResult(intent, ACTION_EDIT);
         }
@@ -111,15 +95,18 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuBack = menu.findItem(R.id.IDM_BACK);
         menuSave = menu.findItem(R.id.IDM_SAVE).setEnabled(false);
+        menuShare = menu.findItem(R.id.IDM_SHARE);
         menuFacebook = menu.findItem(R.id.IDM_FACEBOOK);
         menuGoogle = menu.findItem(R.id.IDM_GOOGLE);
 
-        if (!isOnline) {
+        if (!isOnline()) {
             menuFacebook.setVisible(false);
             menuGoogle.setVisible(false);
+            menuShare.setVisible(false);
         } else {
             menuFacebook.setVisible(true);
             menuGoogle.setVisible(true);
+            menuShare.setVisible(true);
         }
 
         if (detailsFragment == null) {
@@ -142,7 +129,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
                     singleton.setDataBase(false);
                     singleton.getArrayAdapter().clear();
                     inVisible();
-                    if (isOnline) {
+                    if (isOnline()) {
                         singleton.getArrayAdapter().addAll(resultClass.getTitle());
                         listView.setItemChecked(-1, true);
                         listView.setSelection(0);
@@ -195,7 +182,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
                 back = false;
                 frameLayout.setVisibility(View.VISIBLE);
                 singleton.getArrayAdapter().clear();
-                if (isOnline) {
+                if (isOnline()) {
                     singleton.getArrayAdapter().addAll(resultClass.getTitle());
                     listView.setItemChecked(-1, true);
                     listView.setSelection(0);
@@ -213,10 +200,16 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
 
 
             case R.id.IDM_FACEBOOK:
+                Intent intent = new Intent();
+                intent.setClass(this, FacebookShareActivity.class);
+                startActivityForResult(intent, 1);
                 return true;
 
 
             case R.id.IDM_GOOGLE:
+                Intent intentGoogle = new Intent();
+                intentGoogle.setClass(this, GoogleShareActivity.class);
+                startActivityForResult(intentGoogle, GoogleShareActivity.REQUEST_CODE_RESOLVE);
                 return true;
 
 

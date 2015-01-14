@@ -6,17 +6,6 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.FacebookFragment">
 
-    <com.facebook.widget.LoginButton
-        android:id="@+id/authButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="80dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight="0" />
-
     <LinearLayout
         android:id="@+id/linear_b"
         android:layout_width="wrap_content"
