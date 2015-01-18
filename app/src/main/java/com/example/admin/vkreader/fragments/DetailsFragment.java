@@ -9,13 +9,9 @@ import android.widget.TextView;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.widget.LoginButton;
-
-import java.util.Arrays;
 
 public class DetailsFragment extends BaseFragment {
     public static final String ARG_POSITION = "param_det";
-    private LoginButton authButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,10 +29,6 @@ public class DetailsFragment extends BaseFragment {
         singleton = Singleton.getInstance();
         imageView = (ImageView) view.findViewById(R.id.image);
         textView = (TextView) view.findViewById(R.id.text);
-        authButton = (LoginButton) view.findViewById(R.id.authButton);
-        authButton.setFragment(DetailsFragment.this);
-        authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-        if (isOnline()) authButton.setVisibility(View.VISIBLE);
         return view;
     }
 

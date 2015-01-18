@@ -18,7 +18,7 @@
         android:id="@+id/frame_facebook"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:background="@color/app_blue"></FrameLayout>
 
 </LinearLayout>

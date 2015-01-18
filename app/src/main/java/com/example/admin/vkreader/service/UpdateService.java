@@ -15,8 +15,6 @@ import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
-import com.example.admin.vkreader.activity.NotificationActivityStart;
-import com.example.admin.vkreader.activity.ResultNotificationActivity;
 import com.example.admin.vkreader.async_task.ParseTask;
 import com.example.admin.vkreader.patterns.Singleton;
 
@@ -25,11 +23,11 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 public class UpdateService extends Service {
+    public static final String ACTION_VIEW_READER = "com.example.admin.contact.READER";
     public static final int mStartId = 001;
     public static final int mUpdateId = 002;
     private NotificationManager manager;
     private PendingIntent resultPendingIntent;
-    private PendingIntent pendingIntentStart;
     private Singleton singleton = Singleton.getInstance();
     private Timer mTimer = new Timer();
     private MyTimerTask mMyTimerTask = new MyTimerTask();
@@ -38,18 +36,14 @@ public class UpdateService extends Service {
     public void onCreate() {
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent resultIntent = new Intent(this,
-                ResultNotificationActivity.class);
+        Intent actionIntent = new Intent(ACTION_VIEW_READER);
         resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
-                resultIntent, 0);
-
-        Intent startIntent = new Intent(this, NotificationActivityStart.class);
-        pendingIntentStart = PendingIntent.getActivity(getApplicationContext(), 0, startIntent, 0);
+                actionIntent, 0);
         if (singleton.count == 1) {
             showNotification(getResources().getString(R.string.ticker),
                     getResources().getString(R.string.contentTitle),
                     getResources().getString(R.string.contentText), mStartId,
-                    pendingIntentStart);
+                    resultPendingIntent);
 
             Toast.makeText(this, getResources().getString(R.string.service_started),
                     Toast.LENGTH_LONG).show();
@@ -62,6 +56,7 @@ public class UpdateService extends Service {
             mTimer.schedule(mMyTimerTask, AlarmManager.INTERVAL_FIFTEEN_MINUTES,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES);
         }catch(Exception e){
+            e.printStackTrace();
         }
         return Service.START_NOT_STICKY;
     }

@@ -8,16 +8,19 @@
         android:title="" />
     <item
         android:id="@+id/IDM_FACEBOOK"
+        android:icon="@drawable/facebook"
         android:showAsAction="always"
-        android:title="Facebook" />
+        android:title="" />
     <item
         android:id="@+id/IDM_GOOGLE"
+        android:icon="@drawable/common_signin_btn_icon_light"
         android:showAsAction="always"
-        android:title="Google+" />
+        android:title="" />
     <item
         android:id="@+id/IDM_SAVE"
+        android:icon="@drawable/save"
         android:showAsAction="always"
-        android:title="@string/save" />
+        android:title="" />
     <item
         android:id="@+id/IDM3"
         android:showAsAction="always"

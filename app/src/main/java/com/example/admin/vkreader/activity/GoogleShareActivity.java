@@ -17,7 +17,6 @@ import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
 import com.example.admin.vkreader.entity.ResultClass;
 import com.example.admin.vkreader.patterns.Singleton;
-import com.facebook.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -145,6 +144,7 @@ public class GoogleShareActivity extends FragmentActivity implements
                         .setText(resultClass.getText().get(singleton.getPosition()))
                         .setContentUrl(Uri.parse(resultClass.getUrls().get(singleton.getPosition())))
                         .getIntent();
+                shareIntent.setPackage("com.google.android.apps.plus");
                 startActivityForResult(shareIntent, 0);
                 break;
 

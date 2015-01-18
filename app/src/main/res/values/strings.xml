@@ -19,10 +19,11 @@
     <string name="title_activity_base"></string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="delete_all">Delete All</string>
     <string name="favorite">FAVORITE</string>
     <string name="title_activity_favorite_list">FavoriteListActivity</string>
     <string name="title_activity_favorite_details">FavoriteDetailsActivity</string>
-    <string name="back_to_main">BackToMain</string>
+    <string name="back_to_main">Back To Main</string>
     <string name="net">No Internet Access</string>
     <string name="dialog_nothing">None have been added!</string>
     <string name="service_started">Service started!</string>
@@ -32,5 +33,6 @@
     <string name="title_activity_facebook_share">FacebookShare</string>
     <string name="share">Share</string>
     <string name="title_activity_google_share">GoogleShareActivity</string>
+    <string name="checked">This article has already been added!</string>
 
 </resources>

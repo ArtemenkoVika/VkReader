@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
     <item
         android:id="@+id/IDM_BACK"
         android:icon="@drawable/arrow"
@@ -9,30 +9,35 @@
     <item
         android:id="@+id/IDM_SHARE"
         android:showAsAction="always"
-        android:title="share" />
+        android:title="@string/share" />
     <item
         android:id="@+id/IDM_BACK_TO_MAIN"
         android:showAsAction="always"
         android:title="@string/back_to_main" />
     <item
         android:id="@+id/IDM_FAVORITE"
+        android:icon="@drawable/favorite"
         android:showAsAction="always"
-        android:title="@string/favorite" />
+        android:title="" />
     <item
         android:id="@+id/IDM_SAVE"
+        android:icon="@drawable/save"
         android:showAsAction="always"
-        android:title="@string/save" />
+        android:title="" />
     <item
         android:id="@+id/IDM_DELETE"
+        android:icon="@drawable/delete"
         android:showAsAction="always"
-        android:title="@string/delete" />
+        android:title="" />
 
     <item
         android:id="@+id/IDM_FACEBOOK"
+        android:icon="@drawable/facebook"
         android:showAsAction="always"
-        android:title="Facebook" />
+        android:title="" />
     <item
         android:id="@+id/IDM_GOOGLE"
+        android:icon="@drawable/common_signin_btn_icon_light"
         android:showAsAction="always"
-        android:title="Google+" />
+        android:title="" />
 </menu>

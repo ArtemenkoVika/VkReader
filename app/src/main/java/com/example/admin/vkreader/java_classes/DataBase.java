@@ -29,6 +29,7 @@ public class DataBase implements IDataBase {
             values.put(DataBaseOfFavorite.TITLE, data.getTitle());
             values.put(DataBaseOfFavorite.TEXT, data.getText());
             values.put(DataBaseOfFavorite.PICTURES, data.getBytes());
+            values.put(DataBaseOfFavorite.URL, data.getUrl());
             db.insert(DataBaseOfFavorite.TABLE_NAME, null, values);
         }
         db.close();

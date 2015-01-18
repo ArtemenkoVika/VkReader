@@ -26,11 +26,11 @@ import com.facebook.widget.ProfilePictureView;
 public class FacebookShareActivity extends FragmentActivity {
     private UiLifecycleHelper uiHelper = null;
     private Button shareButton;
-    private Button profileButton;
     private TextView textView;
     private ProfilePictureView profilePictureView;
     private ProgressDialog progressDialog;
     private Singleton singleton = Singleton.getInstance();
+    private Boolean progress = true;
 
     public UiLifecycleHelper getUiHelper() {
         return uiHelper;
@@ -47,6 +47,8 @@ public class FacebookShareActivity extends FragmentActivity {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Wait, pleas");
         progressDialog.setOwnerActivity(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         if (singleton.count2 == 0) progressDialog.show();
         singleton.count2++;
 
@@ -58,7 +60,6 @@ public class FacebookShareActivity extends FragmentActivity {
         Session.openActiveSession(this, true, callback);
 
         shareButton = (Button) findViewById(R.id.share_button);
-        profileButton = (Button) findViewById(R.id.profile_button);
         textView = (TextView) findViewById(R.id.nik);
         profilePictureView = (ProfilePictureView) findViewById(R.id.profileView);
     }
@@ -74,13 +75,16 @@ public class FacebookShareActivity extends FragmentActivity {
                     public void onCompleted(GraphUser user, Response response) {
                         System.out.println("Complete");
                         if (user != null) {
-                            progressDialog.dismiss();
-                            shareButton.setVisibility(View.VISIBLE);
-                            profileButton.setVisibility(View.VISIBLE);
+                            progress = false;
+
                             textView.setText(user.getName());
                             profilePictureView.setProfileId(user.getId());
-                        } else {
-                            System.out.println("User NULL");
+
+                            shareButton.setVisibility(View.VISIBLE);
+                            textView.setVisibility(View.VISIBLE);
+                            profilePictureView.setVisibility(View.VISIBLE);
+
+                            progressDialog.dismiss();
                         }
                     }
                 }).executeAsync();
@@ -114,6 +118,7 @@ public class FacebookShareActivity extends FragmentActivity {
         AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
                 facebook_app_id));
         uiHelper.onResume();
+        if (progress && !progressDialog.isShowing()) progressDialog.show();
     }
 
     @Override
@@ -122,13 +127,12 @@ public class FacebookShareActivity extends FragmentActivity {
         uiHelper.onSaveInstanceState(outState);
 
         int visShareButton = shareButton.getVisibility();
-        int visProfileButton = profileButton.getVisibility();
         int visTextView = textView.getVisibility();
         int visProfilePictureView = profilePictureView.getVisibility();
         String text = (String) textView.getText();
 
+        outState.putBoolean("progress", progress);
         outState.putInt("visShareButton", visShareButton);
-        outState.putInt("visProfileButton", visProfileButton);
         outState.putInt("visTextView", visTextView);
         outState.putInt("visProfilePictureView", visProfilePictureView);
         outState.putString("text", text);
@@ -171,9 +175,9 @@ public class FacebookShareActivity extends FragmentActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+        progress = savedInstanceState.getBoolean("progress");
         textView.setText(savedInstanceState.getString("text"));
         savedInRotation(savedInstanceState, "visShareButton", shareButton);
-        savedInRotation(savedInstanceState, "visProfileButton", profileButton);
         savedInRotation(savedInstanceState, "visTextView", textView);
         savedInRotation(savedInstanceState, "visProfilePictureView", profilePictureView);
     }

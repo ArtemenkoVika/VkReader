@@ -11,7 +11,6 @@ import com.example.admin.vkreader.fragments.DetailsFragment;
 
 public class DetailsActivity extends BaseActivity {
     private Fragment fragment2;
-    private MenuItem menuSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +44,13 @@ public class DetailsActivity extends BaseActivity {
         if (!isOnline()) {
             menuFacebook.setVisible(false);
             menuGoogle.setVisible(false);
+            menuSave.setVisible(false);
         } else {
             menuFacebook.setVisible(true);
             menuGoogle.setVisible(true);
+            menuSave.setVisible(true);
         }
-        if (singleton.isDataBase() == true) menuSave.setEnabled(false);
+        if (singleton.isDataBase() == true) menuSave.setVisible(false);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -85,7 +86,7 @@ public class DetailsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        boolean menu_vis = menuSave.isEnabled();
+        boolean menu_vis = menuSave.isVisible();
         outState.putBoolean("menu_vis", menu_vis);
     }
 
@@ -93,7 +94,7 @@ public class DetailsActivity extends BaseActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         boolean menu_vis = savedInstanceState.getBoolean("menu_vis");
-        if (menu_vis) menuSave.setEnabled(true);
-        else menuSave.setEnabled(false);
+        if (menu_vis) menuSave.setVisible(true);
+        else menuSave.setVisible(false);
     }
 }

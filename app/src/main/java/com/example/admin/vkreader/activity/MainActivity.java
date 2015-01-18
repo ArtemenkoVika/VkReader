@@ -13,23 +13,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
-import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 import com.example.admin.vkreader.fragments.BaseFragment;
+import com.example.admin.vkreader.fragments.DeleteFragment;
 import com.example.admin.vkreader.fragments.ListFragment;
 import com.example.admin.vkreader.service.UpdateService;
 import com.facebook.AppEventsLogger;
 
-import java.util.ArrayList;
-
 public class MainActivity extends BaseActivity implements ListFragment.onSomeEventListener {
     public static final int ACTION_EDIT = 101;
     public static final String IDE_EXTRA = "param";
-    private ListFragment listFragment;
     private Intent intent;
     private FrameLayout frameLayout;
     private MenuItem menuBack;
-    private ArrayList arrayFavorite;
-    private ArrayList arrayDelete;
     private ListView listView;
     private MenuItem menuShare;
 
@@ -46,7 +41,8 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         singleton.count++;
         if (isOnline()) startService(intent);
         listFragment = new ListFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.frm, listFragment).commit();
+        if (!singleton.isDelete()) getSupportFragmentManager().beginTransaction().
+                add(R.id.frm, listFragment).commit();
         detailsFragment = getSupportFragmentManager().findFragmentById(R.id.details_frag);
         imageView = (ImageView) findViewById(R.id.image);
         textView = (TextView) findViewById(R.id.text);
@@ -70,8 +66,8 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     @Override
     public void someEvent(Integer position) {
         this.position = position;
-        if (singleton.isDataBase() == true) menuSave.setEnabled(false);
-        else menuSave.setEnabled(true);
+        if (singleton.isDataBase() == true || detailsFragment == null) menuSave.setVisible(false);
+        else menuSave.setVisible(true);
         if (detailsFragment == null) {
             Intent intent = new Intent();
             intent.putExtra(IDE_EXTRA, position);
@@ -94,7 +90,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuBack = menu.findItem(R.id.IDM_BACK);
-        menuSave = menu.findItem(R.id.IDM_SAVE).setEnabled(false);
+        menuSave = menu.findItem(R.id.IDM_SAVE).setVisible(false);
         menuShare = menu.findItem(R.id.IDM_SHARE);
         menuFacebook = menu.findItem(R.id.IDM_FACEBOOK);
         menuGoogle = menu.findItem(R.id.IDM_GOOGLE);
@@ -111,7 +107,6 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
 
         if (detailsFragment == null) {
             menuBack.setVisible(false);
-            menuSave.setVisible(false);
             menuFacebook.setVisible(false);
             menuGoogle.setVisible(false);
         }
@@ -124,18 +119,37 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
 
 
             case R.id.IDM_BACK:
+
+                arrayFavorite = dataBase.showSavedArticles(this);
+                if (dataBase.isCursorToFirst()) {
+                    if (singleton.isDataBase() && singleton.isDelete()) {
+                        singleton.getArrayAdapter().clear();
+                        singleton.getArrayAdapter().addAll(arrayFavorite);
+                        back = false;
+                    }
+                }
+
+                if (singleton.isDelete()) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frm, listFragment).commit();
+                    singleton.setDelete(false);
+                }
                 if (back && (frameLayout.getVisibility() == View.VISIBLE)) {
-                    menuSave.setEnabled(false);
+                    back = false;
+                    menuSave.setVisible(false);
                     singleton.setDataBase(false);
                     singleton.getArrayAdapter().clear();
                     inVisible();
                     if (isOnline()) {
                         singleton.getArrayAdapter().addAll(resultClass.getTitle());
-                        listView.setItemChecked(-1, true);
-                        listView.setSelection(0);
+                        if (listView != null) {
+                            listView.setItemChecked(-1, true);
+                            listView.setSelection(0);
+                        }
                     }
                 }
                 frameLayout.setVisibility(View.VISIBLE);
+                singleton.setDelete(false);
                 return true;
 
 
@@ -147,10 +161,15 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             case R.id.IDM_FAVORITE:
                 arrayFavorite = dataBase.showSavedArticles(this);
                 if (dataBase.isCursorToFirst()) {
+                    if (singleton.isDelete()) getSupportFragmentManager().beginTransaction().
+                            replace(R.id.frm, listFragment).commit();
+                    singleton.setDelete(false);
                     inVisible();
-                    listView.setItemChecked(-1, true);
-                    listView.setSelection(0);
-                    menuSave.setEnabled(false);
+                    if (listView != null) {
+                        listView.setItemChecked(-1, true);
+                        listView.setSelection(0);
+                    }
+                    menuSave.setVisible(false);
                     singleton.setDataBase(true);
                     back = true;
                     frameLayout.setVisibility(View.VISIBLE);
@@ -165,10 +184,11 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             case R.id.IDM_DELETE:
                 dataBase.showSavedArticles(this);
                 if (dataBase.isCursorToFirst()) {
-                    arrayDelete = dataBase.showSavedArticles(this);
-                    deleteAdapter = new DataDeleteAdapter(this, R.layout.row_delete, arrayDelete);
-                    deleteAdapter.setNotifyOnChange(true);
-                    showDialogDelete(getResources().getString(R.string.delete));
+                    singleton.setDelete(true);
+                    DeleteFragment deleteFragment = new DeleteFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frm, deleteFragment)
+                            .commit();
+                    frameLayout.setVisibility(View.VISIBLE);
                 } else {
                     showDialogInfo("", getResources().getString(R.string.dialog_nothing));
                 }
@@ -176,16 +196,23 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
 
 
             case R.id.IDM_BACK_TO_MAIN:
+                if (singleton.isDelete()) {
+                    getSupportFragmentManager().beginTransaction().
+                            replace(R.id.frm, listFragment).commit();
+                    singleton.setDelete(false);
+                }
                 inVisible();
-                menuSave.setEnabled(false);
+                menuSave.setVisible(false);
                 singleton.setDataBase(false);
                 back = false;
                 frameLayout.setVisibility(View.VISIBLE);
                 singleton.getArrayAdapter().clear();
                 if (isOnline()) {
                     singleton.getArrayAdapter().addAll(resultClass.getTitle());
-                    listView.setItemChecked(-1, true);
-                    listView.setSelection(0);
+                    if (listView != null) {
+                        listView.setItemChecked(-1, true);
+                        listView.setSelection(0);
+                    }
                 }
                 return true;
 
@@ -233,7 +260,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             int visibility = frameLayout.getVisibility();
             int imVis = imageView.getVisibility();
             if (menuSave != null) {
-                boolean menu_vis = menuSave.isEnabled();
+                boolean menu_vis = menuSave.isVisible();
                 outState.putBoolean("menu_vis", menu_vis);
             }
             outState.putString("text", text);
@@ -245,15 +272,12 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             check = listView.getCheckedItemPosition();
         } catch (NullPointerException e) {
         }
-        boolean b1 = false;
-        boolean b2 = false;
-        if (dialogDelete != null) b1 = dialogDelete.isShowing();
-        if (dialogInfo != null) b2 = dialogInfo.isShowing();
+        boolean b = false;
+        if (dialogInfo != null) b = dialogInfo.isShowing();
         outState.putInt("check", check);
         outState.putBoolean("back", back);
         outState.putBoolean("isDataBase", singleton.isDataBase());
-        outState.putBoolean("b1", b1);
-        outState.putBoolean("b2", b2);
+        outState.putBoolean("b", b);
     }
 
     @Override
@@ -275,8 +299,8 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
             if (imVis == View.INVISIBLE) imageView.setVisibility(View.INVISIBLE);
             if (menuSave != null) {
                 boolean menu_vis = savedInstanceState.getBoolean("menu_vis");
-                if (menu_vis) menuSave.setEnabled(true);
-                else menuSave.setEnabled(false);
+                if (menu_vis) menuSave.setVisible(true);
+                else menuSave.setVisible(false);
             }
         }
         try {
@@ -286,12 +310,7 @@ public class MainActivity extends BaseActivity implements ListFragment.onSomeEve
         }
         back = savedInstanceState.getBoolean("back");
         singleton.setDataBase(savedInstanceState.getBoolean("isDataBase"));
-        if (savedInstanceState.getBoolean("b1")) {
-            arrayDelete = dataBase.showSavedArticles(this);
-            deleteAdapter = new DataDeleteAdapter(this, R.layout.row_delete, arrayDelete);
-            showDialogDelete(getResources().getString(R.string.delete));
-        }
-        if (savedInstanceState.getBoolean("b2")) {
+        if (savedInstanceState.getBoolean("b")) {
             showDialogInfo("", getResources().getString(R.string.dialog_nothing));
         }
     }

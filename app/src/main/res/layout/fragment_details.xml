@@ -7,14 +7,6 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.DetailsFragment">
 
-    <com.facebook.widget.LoginButton
-        android:id="@+id/authButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:visibility="gone" />
-
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"

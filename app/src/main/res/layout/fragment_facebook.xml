@@ -6,36 +6,15 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.FacebookFragment">
 
-    <LinearLayout
-        android:id="@+id/linear_b"
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="15dp" />
 
-        <Button
-            android:id="@+id/share_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="ShareDialog"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/profile_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:text="Profile"
-            android:visibility="invisible" />
-
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linear_profile"
@@ -60,4 +39,15 @@
             android:visibility="invisible" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="0"
+        android:text="ShareDialog"
+        android:visibility="invisible" />
 </LinearLayout>

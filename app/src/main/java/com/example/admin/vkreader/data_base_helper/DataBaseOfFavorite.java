@@ -11,11 +11,12 @@ public class DataBaseOfFavorite extends SQLiteOpenHelper implements BaseColumns 
     public static final String TITLE = "title";
     public static final String TEXT = "text";
     public static final String PICTURES = "pictures";
-    public static final int DATABASE_VERSION = 1;
+    public static final String URL = "url";
+    public static final int DATABASE_VERSION = 2;
     private static DataBaseOfFavorite instance;
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + TABLE_NAME +
             " (" + DataBaseOfFavorite._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + TITLE +
-            "  VARCHAR(75), " + TEXT + " TEXT, " + PICTURES + " BLOB);";
+            "  VARCHAR(75), " + TEXT + " TEXT, " + PICTURES + " BLOB, " + URL +  " TEXT);";
 
     private DataBaseOfFavorite(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

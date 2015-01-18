@@ -16,11 +16,17 @@
 
         <activity
             android:name=".activity.MainActivity"
-            android:label="@string/app_name">
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.example.admin.vkreader">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.example.admin.contact.READER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -32,32 +38,6 @@
             android:name=".service.UpdateService"
             android:enabled="true"
             android:exported="false" />
-
-        <activity
-            android:name=".activity.ResultNotificationActivity"
-            android:excludeFromRecents="true"
-            android:label="@string/title_activity_result_notification"
-            android:launchMode="singleTask"
-            android:parentActivityName="activity.MainActivity"
-            android:taskAffinity="com.example.admin.vkreader"
-            android:theme="@android:style/Animation.Dialog">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-
-        <activity
-            android:name=".activity.NotificationActivityStart"
-            android:excludeFromRecents="true"
-            android:label="@string/title_activity_pending_activity_start"
-            android:launchMode="singleTask"
-            android:parentActivityName="activity.MainActivity"
-            android:taskAffinity="com.example.admin.vkreader"
-            android:theme="@android:style/Animation.Dialog">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
 
         <activity
             android:name=".activity.BaseActivity"

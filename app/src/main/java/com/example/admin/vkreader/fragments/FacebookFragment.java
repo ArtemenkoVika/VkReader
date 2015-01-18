@@ -1,32 +1,34 @@
 package com.example.admin.vkreader.fragments;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.activity.FacebookShareActivity;
+import com.example.admin.vkreader.data_base_helper.DataBaseOfFavorite;
 import com.example.admin.vkreader.entity.ResultClass;
 import com.example.admin.vkreader.patterns.Singleton;
 import com.facebook.FacebookException;
 import com.facebook.Session;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.ProfilePictureView;
+import com.facebook.widget.LoginButton;
 import com.facebook.widget.WebDialog;
+
+import java.util.Arrays;
 
 public class FacebookFragment extends Fragment implements View.OnClickListener {
     private Singleton singleton = Singleton.getInstance();
     private ResultClass resultClass = ResultClass.getInstance();
     private Button shareButton;
-    private Button profileButton;
-    private TextView textView;
-    private ProfilePictureView profilePictureView;
+    private LoginButton authButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,15 +43,14 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_facebook, container, false);
 
+        authButton = (LoginButton) view.findViewById(R.id.authButton);
+        authButton.setFragment(FacebookFragment.this);
+        authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
+        //authButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
+
         shareButton = (Button) view.findViewById(R.id.share_button);
         shareButton.setOnClickListener(this);
-
-        profileButton = (Button) view.findViewById(R.id.profile_button);
-        profileButton.setOnClickListener(this);
-
-        textView = (TextView) view.findViewById(R.id.nik);
-        profilePictureView = (ProfilePictureView) view.findViewById(R.id.profileView);
-
+        System.out.println(authButton.getUserInfoChangedCallback());
         return view;
     }
 
@@ -129,14 +130,34 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.share_button:
-                facebookPublish(resultClass.getTitle().get(singleton.getPosition()), "",
-                        resultClass.getText().get(singleton.getPosition()),
-                        "https://vk.com/christian_parable",
-                        resultClass.getUrls().get(singleton.getPosition()));
-                break;
-            case R.id.profile_button:
-                textView.setVisibility(View.VISIBLE);
-                profilePictureView.setVisibility(View.VISIBLE);
+                if (!singleton.isDataBase()) facebookPublish(resultClass.getTitle().
+                                get(singleton.getPosition()), "", resultClass.getText().
+                                get(singleton.getPosition()),
+                        "https://vk.com/christian_parable", resultClass.getUrls().
+                                get(singleton.getPosition()));
+
+                else {
+                    SQLiteDatabase db = DataBaseOfFavorite.getInstance(getActivity()).
+                            getReadableDatabase();
+                    Cursor cursor = db.query(DataBaseOfFavorite.TABLE_NAME, new String[]{
+                                    DataBaseOfFavorite.TITLE, DataBaseOfFavorite.TEXT,
+                                    DataBaseOfFavorite.URL},
+                            DataBaseOfFavorite._ID + "=" + singleton.getId().
+                                    get(singleton.getPosition()),
+                            null, null, null, null);
+                    if (cursor != null) {
+                        cursor.moveToFirst();
+                    }
+                    String text = cursor.getString(cursor.getColumnIndex
+                            (DataBaseOfFavorite.TEXT));
+                    String url = cursor.getString(cursor.getColumnIndex
+                            (DataBaseOfFavorite.URL));
+                    String title = cursor.getString(cursor.getColumnIndex
+                            (DataBaseOfFavorite.TITLE));
+                    db.close();
+                    cursor.close();
+                    facebookPublish(title, "", text, "https://vk.com/christian_parable", url);
+                }
                 break;
             default:
                 break;
