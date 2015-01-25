@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context="com.example.admin.vkreader.fragments.ListFragment">
 
+    <Button
+        android:id="@+id/button_delete_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/delete_all"
+        android:visibility="gone"></Button>
+
     <ListView
         android:id="@+id/my_list"
         android:layout_width="match_parent"

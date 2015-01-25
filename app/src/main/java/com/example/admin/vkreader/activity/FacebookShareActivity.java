@@ -115,8 +115,7 @@ public class FacebookShareActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        AppEventsLogger.activateApp(getApplicationContext(), getResources().getString(R.string.
-                facebook_app_id));
+        AppEventsLogger.activateApp(this, getResources().getString(R.string.facebook_app_id));
         uiHelper.onResume();
         if (progress && !progressDialog.isShowing()) progressDialog.show();
     }

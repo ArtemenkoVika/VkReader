@@ -14,22 +14,24 @@ import android.widget.TextView;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
 import com.example.admin.vkreader.data_base_helper.DataBaseOfFavorite;
 import com.example.admin.vkreader.entity.ResultClass;
+import com.example.admin.vkreader.java_classes.DataBase;
 import com.example.admin.vkreader.patterns.Singleton;
 
 import java.util.concurrent.ExecutionException;
 
 public class BaseFragment extends Fragment {
     protected ResultClass resultClass = ResultClass.getInstance();
+    protected DataBase dataBase = new DataBase();
     protected Singleton singleton;
     protected TextView textView;
     protected ImageView imageView;
-    protected int position;
     protected LoadImageFromNetwork load;
     protected Bitmap bitmap;
+    protected int position;
 
     public void click() {
         load = new LoadImageFromNetwork(getActivity());
-        load.execute(resultClass.getUrls().get(position));
+        load.execute(resultClass.getUrls().get(singleton.getPosition()));
         try {
             imageView.setImageBitmap(load.get());
         } catch (InterruptedException e) {
@@ -37,7 +39,7 @@ public class BaseFragment extends Fragment {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        textView.setText(resultClass.getText().get(position));
+        textView.setText(resultClass.getText().get(singleton.getPosition()));
         imageView.setVisibility(View.VISIBLE);
     }
 
@@ -45,7 +47,7 @@ public class BaseFragment extends Fragment {
         SQLiteDatabase db = DataBaseOfFavorite.getInstance(getActivity()).getReadableDatabase();
         Cursor cursor = db.query(DataBaseOfFavorite.TABLE_NAME, new String[]{
                         DataBaseOfFavorite.TEXT, DataBaseOfFavorite.PICTURES},
-                DataBaseOfFavorite._ID + "=" + singleton.getId().get(position),
+                DataBaseOfFavorite._ID + "=" + singleton.getId().get(singleton.getPosition()),
                 null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -54,7 +56,12 @@ public class BaseFragment extends Fragment {
                 (DataBaseOfFavorite.TEXT));
         byte[] bytes = cursor.getBlob(cursor.getColumnIndex
                 (DataBaseOfFavorite.PICTURES));
-        bitmap = getBitmapFromByteArray(bytes);
+        try {
+            bitmap = getBitmapFromByteArray(bytes);
+        } catch (OutOfMemoryError e) {
+            System.out.println(e + " - in the BaseFragment");
+            e.printStackTrace();
+        }
         imageView.setImageBitmap(bitmap);
         imageView.setVisibility(View.VISIBLE);
         textView.setText(text);

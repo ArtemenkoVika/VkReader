@@ -7,9 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,10 +24,9 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         View.OnClickListener {
     private onSomeEventListener someEventListener;
     private ListView listView;
+    private Button buttonDeleteAll;
     private Fragment fragment2;
     private ParseTask parseTask;
-    private FrameLayout frameLayout;
-    private LinearLayout linearLayout;
     private ArrayList list = new ArrayList();
     private View view;
 
@@ -39,13 +37,9 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
         singleton = Singleton.getInstance();
         imageView = (ImageView) getActivity().findViewById(R.id.image);
         textView = (TextView) getActivity().findViewById(R.id.text);
-        frameLayout = (FrameLayout) getActivity().findViewById(R.id.frm);
+        buttonDeleteAll = (Button) view.findViewById(R.id.button_delete_all);
+        buttonDeleteAll.setOnClickListener(this);;
         fragment2 = getActivity().getSupportFragmentManager().findFragmentById(R.id.details_frag);
-        if (fragment2 != null) {
-            linearLayout = (LinearLayout) getActivity().findViewById(R.id.fragment2);
-            linearLayout.setOnClickListener(this);
-            textView.setOnClickListener(this);
-        }
         listView = (ListView) view.findViewById(R.id.my_list);
         try {
             if (isOnline()) {
@@ -67,7 +61,7 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
             listView.setAdapter(singleton.getArrayAdapter());
             singleton.getArrayAdapter().setNotifyOnChange(true);
             listView.setOnItemClickListener(this);
-            someEventListener.someListView(listView);
+            someEventListener.someListView(listView, buttonDeleteAll);
         } catch (InterruptedException e) {
             System.out.println(e + " - in MyListFragment");
         } catch (ExecutionException e) {
@@ -80,13 +74,14 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public void onClick(View v) {
-        frameLayout.setVisibility(View.GONE);
+        dataBase.deleteAll(getActivity());
+        singleton.getArrayAdapter().clear();
     }
 
     public interface onSomeEventListener {
         public void someEvent(Integer i);
 
-        public void someListView(ListView listView);
+        public void someListView(ListView listView, Button buttonDeleteAll);
     }
 
     @Override
@@ -102,12 +97,10 @@ public class ListFragment extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        this.position = position;
         singleton.setPosition(position);
         someEventListener.someEvent(position);
         if (fragment2 != null) {
             try {
-                frameLayout.setVisibility(View.GONE);
                 if (!singleton.isDataBase()) click();
                 else clickOfDataBase();
             } catch (NullPointerException e) {

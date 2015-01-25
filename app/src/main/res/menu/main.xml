@@ -20,17 +20,6 @@
         android:showAsAction="always"
         android:title="" />
     <item
-        android:id="@+id/IDM_SAVE"
-        android:icon="@drawable/save"
-        android:showAsAction="always"
-        android:title="" />
-    <item
-        android:id="@+id/IDM_DELETE"
-        android:icon="@drawable/delete"
-        android:showAsAction="always"
-        android:title="" />
-
-    <item
         android:id="@+id/IDM_FACEBOOK"
         android:icon="@drawable/facebook"
         android:showAsAction="always"
@@ -38,6 +27,16 @@
     <item
         android:id="@+id/IDM_GOOGLE"
         android:icon="@drawable/common_signin_btn_icon_light"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM_SAVE"
+        android:icon="@drawable/save"
+        android:showAsAction="always"
+        android:title="" />
+    <item
+        android:id="@+id/IDM_DELETE"
+        android:icon="@drawable/delete"
         android:showAsAction="always"
         android:title="" />
 </menu>

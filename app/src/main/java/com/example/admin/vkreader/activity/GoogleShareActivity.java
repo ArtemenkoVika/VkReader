@@ -3,6 +3,8 @@ package com.example.admin.vkreader.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -12,9 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
+import com.example.admin.vkreader.data_base_helper.DataBaseOfFavorite;
 import com.example.admin.vkreader.entity.ResultClass;
 import com.example.admin.vkreader.patterns.Singleton;
 import com.google.android.gms.common.ConnectionResult;
@@ -23,6 +27,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.google.android.gms.plus.model.people.Person;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.concurrent.ExecutionException;
 
@@ -51,10 +56,15 @@ public class GoogleShareActivity extends FragmentActivity implements
         mPlusClient = new GoogleApiClient.Builder(this, this, this)
                 .addApi(Plus.API)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_PROFILE)
                 .build();
         mConnectionProgressDialog = new ProgressDialog(this);
         mConnectionProgressDialog.setMessage("Wait, pleas");
         mConnectionProgressDialog.setOwnerActivity(this);
+
+        int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (errorCode != ConnectionResult.SUCCESS)
+            GooglePlayServicesUtil.getErrorDialog(errorCode, this, 0).show();
 
         googleButton = (SignInButton) findViewById(R.id.sign_in_button);
         googleButton.setOnClickListener(this);
@@ -120,8 +130,10 @@ public class GoogleShareActivity extends FragmentActivity implements
                             mPlusClient.connect();
                         }
                     }
-                    buttonProfile.setVisibility(View.VISIBLE);
-                    buttonShare.setVisibility(View.VISIBLE);
+                    if (mPlusClient.isConnected()) {
+                        buttonProfile.setVisibility(View.VISIBLE);
+                        buttonShare.setVisibility(View.VISIBLE);
+                    }
                 }
                 break;
 
@@ -139,13 +151,46 @@ public class GoogleShareActivity extends FragmentActivity implements
                 break;
 
             case R.id.g_share_button:
-                Intent shareIntent = new PlusShare.Builder(this)
-                        .setType("text/plain")
-                        .setText(resultClass.getText().get(singleton.getPosition()))
-                        .setContentUrl(Uri.parse(resultClass.getUrls().get(singleton.getPosition())))
-                        .getIntent();
-                shareIntent.setPackage("com.google.android.apps.plus");
-                startActivityForResult(shareIntent, 0);
+                if (mPlusClient.isConnected()) {
+
+                    if (!singleton.isDataBase()) {
+                        Intent shareIntent = new PlusShare.Builder(this)
+                                .setType("text/plain")
+                                .setText(resultClass.getText().get(singleton.getPosition()))
+                                .setContentUrl(Uri.parse(resultClass.getUrls().get(singleton.
+                                        getPosition())))
+                                .getIntent().setPackage(getPackageName());
+                        startActivityForResult(shareIntent, 0);
+                    }
+
+                    if (singleton.isDataBase()) {
+                        SQLiteDatabase db = DataBaseOfFavorite.getInstance(this).
+                                getReadableDatabase();
+                        Cursor cursor = db.query(DataBaseOfFavorite.TABLE_NAME, new String[]{
+                                        DataBaseOfFavorite.TEXT, DataBaseOfFavorite.URL},
+                                DataBaseOfFavorite._ID + "=" + singleton.getId().
+                                        get(singleton.getPosition()), null, null, null, null);
+                        if (cursor != null) {
+                            cursor.moveToFirst();
+                        }
+                        String text = cursor.getString(cursor.getColumnIndex
+                                (DataBaseOfFavorite.TEXT));
+                        String url = cursor.getString(cursor.getColumnIndex
+                                (DataBaseOfFavorite.URL));
+                        db.close();
+                        cursor.close();
+                        Intent shareIntent = new PlusShare.Builder(this)
+                                .setType("text/plain")
+                                .setText(text)
+                                .setContentUrl(Uri.parse(url))
+                                .getIntent().setPackage("com.google.android.apps.plus");
+                        startActivityForResult(shareIntent, 0);
+                    }
+
+                } else {
+                    Toast.makeText(this, "Please Sign-in with google Account", Toast.LENGTH_LONG)
+                            .show();
+                }
                 break;
 
             case R.id.g_profile_button:

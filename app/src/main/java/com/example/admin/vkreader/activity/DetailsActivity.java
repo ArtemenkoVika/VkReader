@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.fragments.DetailsFragment;
 
-public class DetailsActivity extends BaseActivity {
+public class DetailsActivity extends BaseActivity implements DetailsFragment.onSomeEvent{
     private Fragment fragment2;
 
     @Override
@@ -39,18 +42,23 @@ public class DetailsActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuSave = menu.findItem(R.id.IDM_SAVE);
+        menuDelete = menu.findItem(R.id.IDM_DELETE);
         menuFacebook = menu.findItem(R.id.IDM_FACEBOOK);
         menuGoogle = menu.findItem(R.id.IDM_GOOGLE);
+
         if (!isOnline()) {
             menuFacebook.setVisible(false);
             menuGoogle.setVisible(false);
-            menuSave.setVisible(false);
         } else {
             menuFacebook.setVisible(true);
             menuGoogle.setVisible(true);
-            menuSave.setVisible(true);
         }
-        if (singleton.isDataBase() == true) menuSave.setVisible(false);
+        if (singleton.isDataBase()) {
+            menuSave.setVisible(false);
+            menuDelete.setVisible(true);
+        } else {
+            checkIsArticlesInDateBase();
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -59,11 +67,27 @@ public class DetailsActivity extends BaseActivity {
         switch (item.getItemId()) {
 
             case R.id.IDM_BACK:
+                if (singleton.isDataBase()) {
+                    arrayFavorite = dataBase.showSavedArticles(this);
+                    singleton.getArrayAdapter().clear();
+                    singleton.getArrayAdapter().addAll(arrayFavorite);
+                }
                 onBackPressed();
                 return true;
 
             case R.id.IDM_SAVE:
                 saveArticles(menuSave);
+                menuSave.setVisible(false);
+                menuDelete.setVisible(true);
+                return true;
+
+            case R.id.IDM_DELETE:
+                if (singleton.isDataBase()) {
+                    singleton.setDelete(true);
+                    imageView.setVisibility(View.INVISIBLE);
+                    textView.setText("");
+                }
+                deleteArticles();
                 return true;
 
             case R.id.IDM_FACEBOOK:
@@ -86,15 +110,20 @@ public class DetailsActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        boolean menu_vis = menuSave.isVisible();
-        outState.putBoolean("menu_vis", menu_vis);
+        outState.putBoolean("menu_save_vis", menuSave.isVisible());
+        outState.putBoolean("menu_delete_vis", menuDelete.isVisible());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        boolean menu_vis = savedInstanceState.getBoolean("menu_vis");
-        if (menu_vis) menuSave.setVisible(true);
-        else menuSave.setVisible(false);
+        savedInRotation(savedInstanceState, "menu_save_vis", menuSave);
+        savedInRotation(savedInstanceState, "menu_delete_vis", menuDelete);
+    }
+
+    @Override
+    public void someView(ImageView imageView, TextView textView) {
+        this.imageView = imageView;
+        this.textView = textView;
     }
 }

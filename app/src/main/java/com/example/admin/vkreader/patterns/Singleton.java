@@ -1,7 +1,6 @@
 package com.example.admin.vkreader.patterns;
 
 import com.example.admin.vkreader.adapters.CustomAdapter;
-import com.example.admin.vkreader.adapters.DataDeleteAdapter;
 
 import java.util.ArrayList;
 
@@ -10,29 +9,20 @@ public class Singleton {
     public int count2 = 0;
     private static final Singleton instance = new Singleton();
     private CustomAdapter arrayAdapter;
-    private DataDeleteAdapter deleteAdapter;
     private boolean isDataBase = false;
-    private boolean delete = false;
+    private boolean isDelete = false;
     private ArrayList id;
     private int position;
 
     private Singleton() {
     }
 
-    public DataDeleteAdapter getDeleteAdapter() {
-        return deleteAdapter;
-    }
-
-    public void setDeleteAdapter(DataDeleteAdapter deleteAdapter) {
-        this.deleteAdapter = deleteAdapter;
-    }
-
     public boolean isDelete() {
-        return delete;
+        return isDelete;
     }
 
-    public void setDelete(boolean delete) {
-        this.delete = delete;
+    public void setDelete(boolean isDelete) {
+        this.isDelete = isDelete;
     }
 
     public int getPosition() {

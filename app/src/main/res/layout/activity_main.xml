@@ -7,7 +7,7 @@
     tools:context="com.example.admin.vkreader.activity.MainActivity">
 
     <FrameLayout
-        android:id="@+id/frm"
+        android:id="@+id/frm_list_frag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/app_blue"></FrameLayout>

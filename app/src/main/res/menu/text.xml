@@ -22,6 +22,11 @@
         android:showAsAction="always"
         android:title="" />
     <item
+        android:id="@+id/IDM_DELETE"
+        android:icon="@drawable/delete"
+        android:showAsAction="always"
+        android:title="" />
+    <item
         android:id="@+id/IDM3"
         android:showAsAction="always"
         android:title="" />
