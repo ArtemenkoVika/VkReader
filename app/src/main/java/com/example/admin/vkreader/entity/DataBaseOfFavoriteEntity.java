@@ -21,10 +21,6 @@ public class DataBaseOfFavoriteEntity {
         return text;
     }
 
-//    public void setText(String text) {
-//        this.text = text;
-//    }
-
     public byte[] getBytes() {
         return bytes;
     }

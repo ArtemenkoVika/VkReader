@@ -30,7 +30,7 @@ public class FacebookShareActivity extends FragmentActivity {
     private ProfilePictureView profilePictureView;
     private ProgressDialog progressDialog;
     private Singleton singleton = Singleton.getInstance();
-    private Boolean progress = true;
+    private boolean progress = true;
 
     public UiLifecycleHelper getUiHelper() {
         return uiHelper;
@@ -48,7 +48,7 @@ public class FacebookShareActivity extends FragmentActivity {
         progressDialog.setMessage("Wait, pleas");
         progressDialog.setOwnerActivity(this);
         progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCanceledOnTouchOutside(true);
         if (singleton.count2 == 0) progressDialog.show();
         singleton.count2++;
 

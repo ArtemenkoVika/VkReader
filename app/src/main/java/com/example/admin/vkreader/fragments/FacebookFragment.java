@@ -29,6 +29,7 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
     private ResultClass resultClass = ResultClass.getInstance();
     private Button shareButton;
     private LoginButton authButton;
+    private WebDialog webDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,6 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
         authButton = (LoginButton) view.findViewById(R.id.authButton);
         authButton.setFragment(FacebookFragment.this);
         authButton.setReadPermissions(Arrays.asList("user_likes", "user_status"));
-        //authButton.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
 
         shareButton = (Button) view.findViewById(R.id.share_button);
         shareButton.setOnClickListener(this);
@@ -57,6 +57,11 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        try {
+            if (singleton.isWebDialogFacebook()) showShareDialog();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         ((FacebookShareActivity) getActivity()).getUiHelper().onResume();
     }
 
@@ -69,6 +74,12 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
+        if (webDialog != null) {
+            if (webDialog.isShowing()) {
+                singleton.setWebDialogFacebook(true);
+                webDialog.dismiss();
+            } else singleton.setWebDialogFacebook(false);
+        }
         ((FacebookShareActivity) getActivity()).getUiHelper().onPause();
     }
 
@@ -104,7 +115,7 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
             params.putString("description", description);
             params.putString("link", link);
             params.putString("picture", pictureLink);
-            WebDialog feedDialog = new WebDialog.FeedDialogBuilder(getActivity(),
+            webDialog = new WebDialog.FeedDialogBuilder(getActivity(),
                     Session.getActiveSession(), params)
                     .setOnCompleteListener(new WebDialog.OnCompleteListener() {
                         //Listener for web-dialog
@@ -122,7 +133,7 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
                         }
                     })
                     .build();
-            feedDialog.show();
+            webDialog.show();
         }
     }
 
@@ -130,37 +141,41 @@ public class FacebookFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.share_button:
-                if (!singleton.isDataBase()) facebookPublish(resultClass.getTitle().
-                                get(singleton.getPosition()), "", resultClass.getText().
-                                get(singleton.getPosition()),
-                        "https://vk.com/christian_parable", resultClass.getUrls().
-                                get(singleton.getPosition()));
-
-                else {
-                    SQLiteDatabase db = DataBaseOfFavorite.getInstance(getActivity()).
-                            getReadableDatabase();
-                    Cursor cursor = db.query(DataBaseOfFavorite.TABLE_NAME, new String[]{
-                                    DataBaseOfFavorite.TITLE, DataBaseOfFavorite.TEXT,
-                                    DataBaseOfFavorite.URL},
-                            DataBaseOfFavorite._ID + "=" + singleton.getId().
-                                    get(singleton.getPosition()),
-                            null, null, null, null);
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                    }
-                    String text = cursor.getString(cursor.getColumnIndex
-                            (DataBaseOfFavorite.TEXT));
-                    String url = cursor.getString(cursor.getColumnIndex
-                            (DataBaseOfFavorite.URL));
-                    String title = cursor.getString(cursor.getColumnIndex
-                            (DataBaseOfFavorite.TITLE));
-                    db.close();
-                    cursor.close();
-                    facebookPublish(title, "", text, "https://vk.com/christian_parable", url);
-                }
+                showShareDialog();
                 break;
             default:
                 break;
+        }
+    }
+
+    public void showShareDialog() {
+        if (!singleton.isDataBase()) facebookPublish(resultClass.getTitle().
+                        get(singleton.getPosition()), "", resultClass.getText().
+                        get(singleton.getPosition()),
+                "https://vk.com/christian_parable", resultClass.getUrls().
+                        get(singleton.getPosition()));
+
+        else {
+            SQLiteDatabase db = DataBaseOfFavorite.getInstance(getActivity()).
+                    getReadableDatabase();
+            Cursor cursor = db.query(DataBaseOfFavorite.TABLE_NAME, new String[]{
+                            DataBaseOfFavorite.TITLE, DataBaseOfFavorite.TEXT,
+                            DataBaseOfFavorite.URL},
+                    DataBaseOfFavorite._ID + "=" + singleton.getId().
+                            get(singleton.getPosition()),
+                    null, null, null, null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+            }
+            String text = cursor.getString(cursor.getColumnIndex
+                    (DataBaseOfFavorite.TEXT));
+            String url = cursor.getString(cursor.getColumnIndex
+                    (DataBaseOfFavorite.URL));
+            String title = cursor.getString(cursor.getColumnIndex
+                    (DataBaseOfFavorite.TITLE));
+            db.close();
+            cursor.close();
+            facebookPublish(title, "", text, "https://vk.com/christian_parable", url);
         }
     }
 }

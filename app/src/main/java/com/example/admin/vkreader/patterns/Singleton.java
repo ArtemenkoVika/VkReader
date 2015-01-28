@@ -13,8 +13,17 @@ public class Singleton {
     private boolean isDelete = false;
     private ArrayList id;
     private int position;
+    private boolean webDialogFacebook = false;
 
     private Singleton() {
+    }
+
+    public boolean isWebDialogFacebook() {
+        return webDialogFacebook;
+    }
+
+    public void setWebDialogFacebook(boolean webDialogFacebook) {
+        this.webDialogFacebook = webDialogFacebook;
     }
 
     public boolean isDelete() {

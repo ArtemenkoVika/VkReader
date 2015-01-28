@@ -52,10 +52,10 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try{
+        try {
             mTimer.schedule(mMyTimerTask, AlarmManager.INTERVAL_FIFTEEN_MINUTES,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return Service.START_NOT_STICKY;
@@ -100,6 +100,7 @@ public class UpdateService extends Service {
                 return;
             }
             uiHandler.post(new Runnable() {
+
                 @Override
                 public void run() {
                     try {

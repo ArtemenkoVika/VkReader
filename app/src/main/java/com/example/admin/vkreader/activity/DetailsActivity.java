@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.fragments.DetailsFragment;
 
-public class DetailsActivity extends BaseActivity implements DetailsFragment.onSomeEvent{
+public class DetailsActivity extends BaseActivity implements DetailsFragment.onSomeEvent {
     private Fragment fragment2;
 
     @Override
@@ -110,15 +110,25 @@ public class DetailsActivity extends BaseActivity implements DetailsFragment.onS
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("menu_save_vis", menuSave.isVisible());
-        outState.putBoolean("menu_delete_vis", menuDelete.isVisible());
+        try {
+            outState.putBoolean("menu_save_vis", menuSave.isVisible());
+            outState.putBoolean("menu_delete_vis", menuDelete.isVisible());
+        } catch (Exception e) {
+            System.out.println(e + " - in the DetailsActivity(onSaveInstanceState)");
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        savedInRotation(savedInstanceState, "menu_save_vis", menuSave);
-        savedInRotation(savedInstanceState, "menu_delete_vis", menuDelete);
+        try {
+            savedInRotation(savedInstanceState, "menu_save_vis", menuSave);
+            savedInRotation(savedInstanceState, "menu_delete_vis", menuDelete);
+        } catch (Exception e) {
+            System.out.println(e + " - in the DetailsActivity(onRestoreInstanceState)");
+            e.printStackTrace();
+        }
     }
 
     @Override

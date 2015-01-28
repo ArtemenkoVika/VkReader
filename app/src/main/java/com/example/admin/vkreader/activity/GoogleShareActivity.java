@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,10 +21,12 @@ import com.example.admin.vkreader.R;
 import com.example.admin.vkreader.async_task.LoadImageFromNetwork;
 import com.example.admin.vkreader.data_base_helper.DataBaseOfFavorite;
 import com.example.admin.vkreader.entity.ResultClass;
+import com.example.admin.vkreader.fragments.BaseFragment;
 import com.example.admin.vkreader.patterns.Singleton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.google.android.gms.plus.model.people.Person;
@@ -41,20 +44,24 @@ public class GoogleShareActivity extends FragmentActivity implements
     private ConnectionResult mConnectionResult;
     private Button buttonOut;
     private Button buttonShare;
-    private Button buttonProfile;
     private Singleton singleton = Singleton.getInstance();
     private ResultClass resultClass = ResultClass.getInstance();
     private TextView textView;
     private ImageView imageView;
-    private String userName = "";
-    private String userAvatar = "";
+    private Person mCurrentPerson;
+    private byte[] bytes;
+    private boolean dialogIsShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_share);
-        mPlusClient = new GoogleApiClient.Builder(this, this, this)
+        mPlusClient = new GoogleApiClient.Builder(this)
                 .addApi(Plus.API)
+                .addApi(Drive.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addScope(Drive.SCOPE_FILE)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(Plus.SCOPE_PLUS_PROFILE)
                 .build();
@@ -72,9 +79,6 @@ public class GoogleShareActivity extends FragmentActivity implements
         buttonOut = (Button) findViewById(R.id.out_button);
         buttonOut.setOnClickListener(this);
 
-        buttonProfile = (Button) findViewById(R.id.g_profile_button);
-        buttonProfile.setOnClickListener(this);
-
         buttonShare = (Button) findViewById(R.id.g_share_button);
         buttonShare.setOnClickListener(this);
 
@@ -91,17 +95,38 @@ public class GoogleShareActivity extends FragmentActivity implements
 
     @Override
     protected void onStop() {
-        super.onStop();
         mPlusClient.disconnect();
+        super.onStop();
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         mConnectionProgressDialog.dismiss();
-        if (Plus.PeopleApi.getCurrentPerson(mPlusClient) != null) {
-            buttonProfile.setVisibility(View.VISIBLE);
-            buttonShare.setVisibility(View.VISIBLE);
+        if (mPlusClient != null && mPlusClient.isConnected()) {
+            if (Plus.PeopleApi.getCurrentPerson(mPlusClient) != null) {
+                mCurrentPerson = Plus.PeopleApi.getCurrentPerson(mPlusClient);
+                String displayName = mCurrentPerson.getDisplayName();
+                textView.setText(displayName);
+                textView.setVisibility(View.VISIBLE);
+                imageView.setVisibility(View.VISIBLE);
+                buttonShare.setVisibility(View.VISIBLE);
+            }
         }
+        LoadImageFromNetwork load = new LoadImageFromNetwork(this);
+        load.execute(mCurrentPerson.getImage().getUrl());
+        try {
+            imageView.setImageBitmap(load.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (dialogIsShowing && mConnectionProgressDialog != null) mConnectionProgressDialog.show();
     }
 
     @Override
@@ -122,6 +147,7 @@ public class GoogleShareActivity extends FragmentActivity implements
                 if (!mPlusClient.isConnected()) {
                     if (mConnectionResult == null) {
                         mConnectionProgressDialog.show();
+                        dialogIsShowing = true;
                     } else {
                         try {
                             mConnectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLVE);
@@ -131,35 +157,37 @@ public class GoogleShareActivity extends FragmentActivity implements
                         }
                     }
                     if (mPlusClient.isConnected()) {
-                        buttonProfile.setVisibility(View.VISIBLE);
                         buttonShare.setVisibility(View.VISIBLE);
                     }
                 }
                 break;
 
             case R.id.out_button:
-                if (mPlusClient.isConnected()) {
-                    mPlusClient.disconnect();
-                    mPlusClient.clearDefaultAccountAndReconnect();
-                    mPlusClient.connect();
+                try {
+                    if (mPlusClient.isConnected()) {
+                        mPlusClient.clearDefaultAccountAndReconnect();
+                        mPlusClient.connect();
 
-                    buttonProfile.setVisibility(View.INVISIBLE);
-                    buttonShare.setVisibility(View.INVISIBLE);
-                    textView.setVisibility(View.INVISIBLE);
-                    imageView.setVisibility(View.INVISIBLE);
+                        buttonShare.setVisibility(View.INVISIBLE);
+                        textView.setVisibility(View.INVISIBLE);
+                        imageView.setVisibility(View.INVISIBLE);
+                    }
+                } catch (Exception e) {
+                    System.out.println(e + " - in the GoogleShareActivity");
+                    e.printStackTrace();
                 }
                 break;
 
             case R.id.g_share_button:
                 if (mPlusClient.isConnected()) {
-
                     if (!singleton.isDataBase()) {
                         Intent shareIntent = new PlusShare.Builder(this)
                                 .setType("text/plain")
                                 .setText(resultClass.getText().get(singleton.getPosition()))
                                 .setContentUrl(Uri.parse(resultClass.getUrls().get(singleton.
                                         getPosition())))
-                                .getIntent().setPackage(getPackageName());
+                                .setContentDeepLinkId("558500555390")
+                                .getIntent();
                         startActivityForResult(shareIntent, 0);
                     }
 
@@ -183,7 +211,8 @@ public class GoogleShareActivity extends FragmentActivity implements
                                 .setType("text/plain")
                                 .setText(text)
                                 .setContentUrl(Uri.parse(url))
-                                .getIntent().setPackage("com.google.android.apps.plus");
+                                .setContentDeepLinkId("558500555390")
+                                .getIntent();
                         startActivityForResult(shareIntent, 0);
                     }
 
@@ -192,28 +221,6 @@ public class GoogleShareActivity extends FragmentActivity implements
                             .show();
                 }
                 break;
-
-            case R.id.g_profile_button:
-                if (Plus.PeopleApi.getCurrentPerson(mPlusClient) != null) {
-                    Person user = Plus.PeopleApi.getCurrentPerson(mPlusClient);
-                    userName = user.getDisplayName();
-                    userAvatar = user.getImage().getUrl();
-
-                    LoadImageFromNetwork load = new LoadImageFromNetwork(this);
-                    load.execute(userAvatar);
-                    try {
-                        imageView.setImageBitmap(load.get());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                    textView.setText(userName);
-                    textView.setVisibility(View.VISIBLE);
-                    imageView.setVisibility(View.VISIBLE);
-                }
-                break;
-
             default:
                 break;
         }
@@ -262,28 +269,38 @@ public class GoogleShareActivity extends FragmentActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        int visButtonProfile = buttonProfile.getVisibility();
-        int visButtonShare = buttonShare.getVisibility();
-        int visTextView = textView.getVisibility();
-        int visImageView = imageView.getVisibility();
+        try {
+            bytes = new BaseActivity().getByteArrayFromBitmap(((BitmapDrawable)
+                    imageView.getDrawable()).getBitmap());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         String text = (String) textView.getText();
 
-        outState.putInt("visButtonProfile", visButtonProfile);
-        outState.putInt("visButtonShare", visButtonShare);
-        outState.putInt("visTextView", visTextView);
-        outState.putInt("visImageView", visImageView);
+        outState.putInt("visButtonShare", buttonShare.getVisibility());
+        outState.putInt("visTextView", textView.getVisibility());
+        outState.putInt("visImageView", imageView.getVisibility());
         outState.putString("text", text);
+        outState.putByteArray("bytes", bytes);
+        outState.putBoolean("dialogIsShowing", dialogIsShowing);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+        try {
+            imageView.setImageBitmap(new BaseFragment().getBitmapFromByteArray(savedInstanceState
+                    .getByteArray("bytes")));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
         textView.setText(savedInstanceState.getString("text"));
-        savedInRotation(savedInstanceState, "visButtonProfile", buttonProfile);
         savedInRotation(savedInstanceState, "visButtonShare", buttonShare);
         savedInRotation(savedInstanceState, "visTextView", textView);
         savedInRotation(savedInstanceState, "visImageView", imageView);
+        dialogIsShowing = savedInstanceState.getBoolean("dialogIsShowing");
     }
 
     public void savedInRotation(Bundle savedInstanceState, String parameter, View view) {
